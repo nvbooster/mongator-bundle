@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Extension;
+namespace Mongator\MongatorBundle\Extension;
 
 use Mandango\Mondator\Extension;
 use Mandango\Mondator\Definition;
 use Mandango\Mondator\Output;
 
 /**
- * Mandango "Bundles" extension.
+ * Mongator "Bundles" extension.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */

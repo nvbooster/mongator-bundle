@@ -1,15 +1,15 @@
 <?php
 
-namespace Mandango\MandangoBundle\Tests;
+namespace Mongator\MongatorBundle\Tests;
 
-use Mandango\Mandango;
-use Mandango\Cache\ArrayCache;
-use Mandango\Connection;
+use Mongator\Mongator;
+use Mongator\Cache\ArrayCache;
+use Mongator\Connection;
 use Model\Mapping\Metadata;
 
 class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $mandango;
+    protected $mongator;
 
     protected function setUp()
     {
@@ -17,11 +17,13 @@ class TestCase extends \PHPUnit_Framework_TestCase
             $this->markTestSkipped('Mongo is not available.');
         }
 
-        $this->mandango = new Mandango(new Metadata(), new ArrayCache());
-        $this->mandango->setConnection('global', new Connection('mongodb://localhost:27017', 'mandango_bundle'));
-        $this->mandango->setDefaultConnectionName('global');
+        $this->mongator = new Mongator(new Metadata());
+        $this->mongator->setConnection('global', new Connection('mongodb://localhost:27017', 'mongator_bundle'));
+        $this->mongator->setDefaultConnectionName('global');
+        $this->mongator->setFieldsCache(new ArrayCache());
+        $this->mongator->setDataCache(new ArrayCache());
 
-        foreach ($this->mandango->getAllRepositories() as $repository) {
+        foreach ($this->mongator->getAllRepositories() as $repository) {
             $repository->getCollection()->drop();
         }
     }

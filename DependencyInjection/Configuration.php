@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,13 +9,13 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\DependencyInjection;
+namespace Mongator\MongatorBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 /**
- * MandangoExtension configuration structure.
+ * MongatorExtension configuration structure.
  *
  * Based on the DoctrineMongoDBBundle's configuration.
  *
@@ -31,7 +31,7 @@ class Configuration
     public function getConfigTree()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('mandango', 'array');
+        $rootNode = $treeBuilder->root('mongator', 'array');
 
         $rootNode
             ->children()
@@ -65,7 +65,7 @@ class Configuration
                     ->prototype('array')
                         //->performNoDeepMerging()
                         ->children()
-                            ->scalarNode('class')->defaultValue('Mandango\Connection')->end()
+                            ->scalarNode('class')->defaultValue('Mongator\Connection')->end()
                             ->scalarNode('server')->end()
                             ->scalarNode('database')->end()
                         ->end()

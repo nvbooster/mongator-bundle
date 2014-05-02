@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Command;
+namespace Mongator\MongatorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +29,7 @@ class EnsureIndexesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mandango:ensure-indexes')
+            ->setName('mongator:ensure-indexes')
             ->setDescription('Ensure the indexes.')
         ;
     }
@@ -41,6 +41,6 @@ class EnsureIndexesCommand extends ContainerAwareCommand
     {
         $output->writeln('ensuring the indexes');
 
-        $this->getContainer()->get('mandango')->ensureAllIndexes();
+        $this->getContainer()->get('mongator')->ensureAllIndexes();
     }
 }

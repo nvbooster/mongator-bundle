@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,10 +9,10 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Command;
+namespace Mongator\MongatorBundle\Command;
 
-use Mandango\DataLoader;
-use Mandango\MandangoBundle\Util;
+use Mongator\DataLoader;
+use Mongator\MongatorBundle\Util;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -33,7 +33,7 @@ class LoadFixturesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mandango:load-fixtures')
+            ->setName('mongator:load-fixtures')
             ->setDescription('Load fixtures.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL, 'The directory or file to load data fixtures from')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Whether or not to append the data fixtures')
@@ -53,12 +53,12 @@ class LoadFixturesCommand extends ContainerAwareCommand
         } else {
             $dirOrFile = array();
             // application
-            if (is_dir($dir = $this->getContainer()->getParameter('kernel.root_dir').'/fixtures/mandango')) {
+            if (is_dir($dir = $this->getContainer()->getParameter('kernel.root_dir').'/fixtures/mongator')) {
                 $dirOrFile[] = $dir;
             }
             // bundles
             foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
-                if (is_dir($dir = $bundle->getPath().'/Resources/fixtures/mandango')) {
+                if (is_dir($dir = $bundle->getPath().'/Resources/fixtures/mongator')) {
                     $dirOrFile[] = $dir;
                 }
             }
@@ -94,7 +94,7 @@ class LoadFixturesCommand extends ContainerAwareCommand
 
         $output->writeln('loading fixtures');
 
-        $dataLoader = new DataLoader($this->getContainer()->get('mandango'));
+        $dataLoader = new DataLoader($this->getContainer()->get('mongator'));
         $dataLoader->load($data, !$input->getOption('append'));
     }
 }

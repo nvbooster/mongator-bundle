@@ -1,10 +1,10 @@
 <?php
 
-namespace Mandango\MandangoBundle\Tests\Validator\Constraint;
+namespace Mongator\MongatorBundle\Tests\Validator\Constraint;
 
-use Mandango\MandangoBundle\Tests\TestCase;
-use Mandango\MandangoBundle\Validator\Constraint\UniqueDocument;
-use Mandango\MandangoBundle\Validator\Constraint\UniqueDocumentValidator;
+use Mongator\MongatorBundle\Tests\TestCase;
+use Mongator\MongatorBundle\Validator\Constraint\UniqueDocument;
+use Mongator\MongatorBundle\Validator\Constraint\UniqueDocumentValidator;
 
 class UniqueDocumentValidatorTest extends TestCase
 {
@@ -14,20 +14,20 @@ class UniqueDocumentValidatorTest extends TestCase
     {
         parent::setUp();
 
-        $this->validator = new UniqueDocumentValidator($this->mandango);
+        $this->validator = new UniqueDocumentValidator($this->mongator);
     }
 
     /**
       * @expectedException \InvalidArgumentException
-      * @dataProvider IsValidNotMandangoDocumentProvider
+      * @dataProvider IsValidNotMongatorDocumentProvider
       */
-    public function testIsValidNotMandangoDocument($document)
+    public function testIsValidNotMongatorDocument($document)
     {
         $constraint = new UniqueDocument(array('fields' => array('title')));
         $this->validator->isValid($document, $constraint);
     }
 
-    public function IsValidNotMandangoDocumentProvider()
+    public function IsValidNotMongatorDocumentProvider()
     {
         return array(
             array('foo'),
@@ -123,6 +123,6 @@ class UniqueDocumentValidatorTest extends TestCase
 
     private function createArticle()
     {
-        return $this->mandango->create('Model\Article');
+        return $this->mongator->create('Model\Article');
     }
 }

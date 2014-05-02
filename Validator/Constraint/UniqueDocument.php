@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Validator\Constraint;
+namespace Mongator\MongatorBundle\Validator\Constraint;
 
 use Symfony\Component\Validator\Constraint;
 
@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraint;
 class UniqueDocument extends Constraint
 {
     public $message = 'This value is already used.';
-    public $service = 'mandango.validator.unique_document';
+    public $service = 'mongator.validator.unique_document';
     public $fields = array();
     public $caseInsensitive = array();
 

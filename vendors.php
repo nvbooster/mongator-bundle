@@ -13,8 +13,8 @@ if (isset($argv[1])) {
 $deps = array(
     array('symfony', 'git://github.com/symfony/symfony', isset($_SERVER['SYMFONY_VERSION']) ? $_SERVER['SYMFONY_VERSION'] : '2.0'),
     array('twig', 'git://github.com/fabpot/Twig', 'origin/master'),
-    array('mondator', 'git://github.com/mandango/mondator', 'origin/master'),
-    array('mandango', 'git://github.com/mandango/mandango', 'origin/master'),
+    array('mondator', 'git://github.com/mongator/mondator', 'origin/master'),
+    array('mongator', 'git://github.com/mongator/mongator', 'origin/master'),
 );
 
 foreach ($deps as $dep) {

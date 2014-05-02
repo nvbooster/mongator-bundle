@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Command;
+namespace Mongator\MongatorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,7 +29,7 @@ class FixMissingReferencesCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mandango:fix-missing-references')
+            ->setName('mongator:fix-missing-references')
             ->setDescription('Fix missing references.')
         ;
     }
@@ -41,6 +41,6 @@ class FixMissingReferencesCommand extends ContainerAwareCommand
     {
         $output->writeln('fixing missing references');
 
-        $this->getContainer()->get('mandango')->fixAllMissingReferences();
+        $this->getContainer()->get('mongator')->fixAllMissingReferences();
     }
 }

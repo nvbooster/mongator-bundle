@@ -1,7 +1,7 @@
 {
-    "name": "mandango/mandango-bundle",
-    "description": "Bundle to use Mandango with Symfony2",
-    "keywords": ["mongodb", "mandango"],
+    "name": "mongator/mongator-bundle",
+    "description": "Bundle to use Mongator with Symfony2",
+    "keywords": ["mongodb", "mongator"],
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
@@ -12,10 +12,10 @@
     ],
     "require": {
         "symfony/framework-bundle": "2.*",
-        "mandango/mandango": "dev-master"
+        "symfony/validator": "2.*",
+        "mongator/mongator": "1.4.*"
     },
     "autoload": {
-        "psr-0": { "Mandango\\MandangoBundle": "" }
-    },
-    "target-dir": "Mandango/MandangoBundle"
+        "psr-4": { "Mongator\\MongatorBundle\\": "" }
+    }
 }

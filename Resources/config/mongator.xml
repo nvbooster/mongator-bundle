@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+      <!-- mongator -->
+      <parameter key="mongator.class">Mongator\Mongator</parameter>
+      <parameter key="mongator.metadata_factory.class">Model\Mapping\MetadataFactory</parameter>
+
+      <parameter key="mongator.model_dir">%kernel.root_dir%/../src/Model</parameter>
+      <parameter key="mongator.metadata_factory.output">%mongator.model_dir%/Mapping</parameter>
+
+      <!-- cache -->
+      <parameter key="mongator.cache.filesystem_cache.class">Mongator\Cache\FilesystemCache</parameter>
+      <parameter key="mongator.cache.filesystem_cache.dir">%kernel.cache_dir%/mongator/cache</parameter>
+
+      <!-- mondator -->
+      <parameter key="mongator.mondator.class">Mandango\Mondator\Mondator</parameter>
+
+      <!-- logger -->
+      <parameter key="mongator.logger.class">Mongator\MongatorBundle\Logger\MongatorLogger</parameter>
+
+      <!-- data collector -->
+      <parameter key="mongator.data_collector.class">Mongator\MongatorBundle\DataCollector\MongatorDataCollector</parameter>
+
+      <!-- form -->
+      <parameter key="form.type.mongator_document.class">Mongator\MongatorBundle\Form\Type\MongatorDocumentType</parameter>
+      <parameter key="form.type_guesser.mongator.class">Mongator\MongatorBundle\Form\MongatorTypeGuesser</parameter>
+
+      <!-- validator -->
+      <parameter key="mongator.validator.unique_document.class">Mongator\MongatorBundle\Validator\Constraint\UniqueDocumentValidator</parameter>
+    </parameters>
+
+    <services>
+        <!-- mongator -->
+        <service id="mongator" class="%mongator.class%">
+            <argument type="service" id="mongator.metadata_factory" />
+            <argument type="service" id="mongator.cache.filesystem" />
+        </service>
+
+        <service id="mongator.metadata_factory" class="%mongator.metadata_factory.class%">
+        </service>
+
+        <!-- cache -->
+        <service id="mongator.cache.filesystem" class="%mongator.cache.filesystem_cache.class%">
+            <argument>%mongator.cache.filesystem_cache.dir%</argument>
+        </service>
+
+        <!-- mondator -->
+        <service id="mongator.mondator" class="%mongator.mondator.class%">
+        </service>
+
+        <!-- logger -->
+        <service id="mongator.logger" class="%mongator.logger.class%">
+            <argument type="service" id="logger" on-invalid="null" />
+        </service>
+
+        <!-- data collector -->
+        <service id="mongator.data_collector" class="%mongator.data_collector.class%" public="false">
+            <tag name="data_collector" template="MongatorBundle:Collector:mongator" id="mongator" />
+            <argument type="service" id="mongator.logger" />
+        </service>
+
+        <!-- form -->
+        <service id="form.type.mongator_document" class="%form.type.mongator_document.class%">
+            <tag name="form.type" alias="mongator_document" />
+            <argument type="service" id="mongator" />
+        </service>
+
+        <service id="form.type_guesser.mongator" class="%form.type_guesser.mongator.class%">
+            <tag name="form.type_guesser" />
+            <argument type="service" id="mongator.metadata_factory" />
+        </service>
+
+        <!-- validator -->
+        <service id="mongator.validator.unique_document" class="%mongator.validator.unique_document.class%">
+            <tag name="validator.constraint_validator" alias="mongator.validator.unique_document" />
+            <argument type="service" id="mongator" />
+        </service>
+    </services>
+</container>

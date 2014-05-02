@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,7 +9,7 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Extension;
+namespace Mongator\MongatorBundle\Extension;
 
 use Mandango\Mondator\Definition\Method;
 use Mandango\Mondator\Dumper;
@@ -75,12 +75,12 @@ class DocumentValidation extends Extension
         $method = new Method('public', 'loadValidatorMetadata', '\Symfony\Component\Validator\Mapping\ClassMetadata $metadata', <<<EOF
         \$validation = $validation;
 
-        foreach (\Mandango\MandangoBundle\Extension\DocumentValidation::parseNodes(\$validation['constraints']) as \$constraint) {
+        foreach (\Mongator\MongatorBundle\Extension\DocumentValidation::parseNodes(\$validation['constraints']) as \$constraint) {
             \$metadata->addConstraint(\$constraint);
         }
 
         foreach (\$validation['getters'] as \$getter => \$constraints) {
-            foreach (\Mandango\MandangoBundle\Extension\DocumentValidation::parseNodes(\$constraints) as \$constraint) {
+            foreach (\Mongator\MongatorBundle\Extension\DocumentValidation::parseNodes(\$constraints) as \$constraint) {
                 \$metadata->addGetterConstraint(\$getter, \$constraint);
             }
         }

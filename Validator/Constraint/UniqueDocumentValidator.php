@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Validator\Constraint;
+namespace Mongator\MongatorBundle\Validator\Constraint;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
-use Mandango\Mandango;
-use Mandango\Document\Document;
+use Mongator\Mongator;
+use Mongator\Document\Document;
 
 /**
  * UniqueConstraint.
@@ -25,14 +25,25 @@ use Mandango\Document\Document;
  */
 class UniqueDocumentValidator extends ConstraintValidator
 {
-    private $mandango;
+    private $mongator;
 
     /**
-     * @param Mandango $madnango A mandango.
+     * @param Mongator $madnango A mongator.
      */
-    public function __construct(Mandango $mandango)
+    public function __construct(Mongator $mongator)
     {
-        $this->mandango = $mandango;
+        $this->mongator = $mongator;
+    }
+
+    /**
+     * @param $value
+     * @param Constraint $constraint
+     * @deprecated
+     * @return bool
+     */
+    public function isValid($value, Constraint $constraint)
+    {
+        return $this->validate($value, $constraint);
     }
 
     /**
@@ -43,7 +54,7 @@ class UniqueDocumentValidator extends ConstraintValidator
      *
      * @return Boolean Whether or not the document is unique.
      */
-    public function isValid($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint)
     {
         $document = $this->parseDocument($value);
         $fields = $this->parseFields($constraint->fields);
@@ -73,7 +84,7 @@ class UniqueDocumentValidator extends ConstraintValidator
     private function parseDocument($document)
     {
         if (!$document instanceof Document) {
-            throw new \InvalidArgumentException('The value must be a mandango document.');
+            throw new \InvalidArgumentException('The value must be a mongator document.');
         }
 
         return $document;
@@ -105,7 +116,7 @@ class UniqueDocumentValidator extends ConstraintValidator
 
     private function createQuery(Document $document, array $fields, array $caseInsensitive)
     {
-        $repository = $this->mandango->getRepository(get_class($document));
+        $repository = $this->mongator->getRepository(get_class($document));
         $criteria = $this->createCriteria($document, $fields, $caseInsensitive);
 
         return $repository->createQuery($criteria);

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Mandango.
+ * This file is part of Mongator.
  *
  * (c) Pablo Díez <pablodip@gmail.com>
  *
@@ -9,14 +9,14 @@
  * with this source code in the file LICENSE.
  */
 
-namespace Mandango\MandangoBundle\Command;
+namespace Mongator\MongatorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
-use Mandango\MandangoBundle\Util;
+use Mongator\MongatorBundle\Util;
 
 /**
  * GenerateCommand.
@@ -31,7 +31,7 @@ class GenerateCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName('mandango:generate')
+            ->setName('mongator:generate')
             ->setDescription('Generate classes from config classes')
         ;
     }
@@ -43,13 +43,13 @@ class GenerateCommand extends ContainerAwareCommand
     {
         $output->writeln('processing config classes');
 
-        $modelDir = $this->getContainer()->getParameter('mandango.model_dir');
+        $modelDir = $this->getContainer()->getParameter('mongator.model_dir');
 
         $configClasses = array();
         // application + extra
         foreach (array_merge(
-            array($this->getContainer()->getParameter('kernel.root_dir').'/config/mandango'),
-            $this->getContainer()->getParameter('mandango.extra_config_classes_dirs')
+            array($this->getContainer()->getParameter('kernel.root_dir').'/config/mongator'),
+            $this->getContainer()->getParameter('mongator.extra_config_classes_dirs')
         ) as $dir) {
             if (is_dir($dir)) {
                 $finder = new Finder();
@@ -57,7 +57,7 @@ class GenerateCommand extends ContainerAwareCommand
                     foreach ((array) Yaml::parse($file) as $class => $configClass) {
                         // class
                         if (0 !== strpos($class, 'Model\\')) {
-                            throw new \RuntimeException('The Mandango documents must been in the "Model\" namespace.');
+                            throw new \RuntimeException('The Mongator documents must been in the "Model\" namespace.');
                         }
 
                         // config class
@@ -77,13 +77,13 @@ class GenerateCommand extends ContainerAwareCommand
         foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
             $bundleModelNamespace = 'Model\\'.$bundle->getName();
 
-            if (is_dir($dir = $bundle->getPath().'/Resources/config/mandango')) {
+            if (is_dir($dir = $bundle->getPath().'/Resources/config/mongator')) {
                 $finder = new Finder();
                 foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
                     foreach ((array) Yaml::parse($file) as $class => $configClass) {
                         // class
                         if (0 !== strpos($class, 'Model\\')) {
-                            throw new \RuntimeException('The mandango documents must been in the "Model\" namespace.');
+                            throw new \RuntimeException('The mongator documents must been in the "Model\" namespace.');
                         }
                         if (0 !== strpos($class, $bundleModelNamespace)) {
                             unset($configClass['output'], $configClass['bundle_name'], $configClass['bundle_dir']);
@@ -120,7 +120,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         $output->writeln('generating classes');
 
-        $mondator = $this->getContainer()->get('mandango.mondator');
+        $mondator = $this->getContainer()->get('mongator.mondator');
         $mondator->setConfigClasses($configClasses);
         $mondator->process();
     }
