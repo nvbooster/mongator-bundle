@@ -104,7 +104,7 @@ EOF
     /*
      * Code from Symfony\Component\Validator\Mapping\Loader\YamlFileLoader
      */
-    static public function parseNodes(array $nodes)
+    public static function parseNodes(array $nodes)
     {
         $values = array();
 
@@ -132,7 +132,7 @@ EOF
     /*
      * Code from Symfony\Component\Validator\Mapping\Loader\FileLoader
      */
-    static protected function newConstraint($name, $options)
+    protected static function newConstraint($name, $options)
     {
         if (false !== strpos($name, '\\') && class_exists($name)) {
             $className = (string) $name;

@@ -12,10 +12,7 @@
 namespace Mongator\MongatorBundle\Form\DataTransformer;
 
 use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
-use Symfony\Bridge\Doctrine\Form\ChoiceList\EntityChoiceList;
-use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\DataTransformer\TransformationFailedException;
 
 /**
  * MongatorDocumentToIdTransformer.

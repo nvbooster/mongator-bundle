@@ -12,7 +12,6 @@
 namespace Mongator\MongatorBundle;
 
 use Mongator\MongatorBundle\DependencyInjection\Compiler\MongatorMondatorPass;
-use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

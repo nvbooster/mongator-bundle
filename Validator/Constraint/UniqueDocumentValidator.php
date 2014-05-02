@@ -37,8 +37,8 @@ class UniqueDocumentValidator extends ConstraintValidator
 
     /**
      * @param $value
-     * @param Constraint $constraint
-     * @deprecated
+     * @param  Constraint $constraint
+     *                                @deprecated
      * @return bool
      */
     public function isValid($value, Constraint $constraint)
@@ -49,7 +49,7 @@ class UniqueDocumentValidator extends ConstraintValidator
     /**
      * Validates the document uniqueness.
      *
-     * @param value      $value   The document.
+     * @param value      $value      The document.
      * @param Constraint $constraint The constraint.
      *
      * @return Boolean Whether or not the document is unique.
