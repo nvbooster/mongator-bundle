@@ -1,4 +1,4 @@
-# MongatorBundle
+# MongatorBundle [![Build Status](https://travis-ci.org/dario1985/mongator-bundle.png)](https://travis-ci.org/dario1985/mongator-bundle)
 
 Bundle to use Mongator with Symfony2.
 
