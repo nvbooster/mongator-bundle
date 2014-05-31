@@ -80,4 +80,23 @@ class UtilTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals($expected, Util::arrayDeepMerge($a, $b, $c));
     }
+
+    public function testArrayDeepMergeIfNoArgsReturnFalse()
+    {
+        $this->assertFalse(Util::arrayDeepMerge());
+    }
+
+    public function testArrayDeepMergeReturnFirstArgWhenIsTheOnlyOne()
+    {
+        $array = array('a' => 1);
+
+        $this->assertSame($array, Util::arrayDeepMerge($array));
+    }
+
+    public function testArrayDeepMergeReturnFirstArgWhenSecondIsNotArray()
+    {
+        $array = array('a' => 1);
+
+        $this->assertSame('string', Util::arrayDeepMerge($array, 'string'));
+    }
 }

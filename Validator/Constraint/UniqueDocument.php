@@ -20,8 +20,10 @@ use Symfony\Component\Validator\Constraint;
  */
 class UniqueDocument extends Constraint
 {
+    const FIELDS_OPTION = 'fields';
+    const SERVICE_VALIDATOR = 'mongator.validator.unique_document';
+
     public $message = 'This value is already used.';
-    public $service = 'mongator.validator.unique_document';
     public $fields = array();
     public $caseInsensitive = array();
 
@@ -30,7 +32,7 @@ class UniqueDocument extends Constraint
      */
     public function getDefaultOption()
     {
-        return 'fields';
+        return self::FIELDS_OPTION;
     }
 
     /**
@@ -38,7 +40,7 @@ class UniqueDocument extends Constraint
      */
     public function getRequiredOptions()
     {
-        return array('fields');
+        return array(self::FIELDS_OPTION);
     }
 
     /**
@@ -48,7 +50,7 @@ class UniqueDocument extends Constraint
      */
     public function validatedBy()
     {
-        return $this->service;
+        return self::SERVICE_VALIDATOR;
     }
 
     /**

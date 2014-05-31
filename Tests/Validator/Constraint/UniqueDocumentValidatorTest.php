@@ -8,23 +8,29 @@ use Mongator\MongatorBundle\Validator\Constraint\UniqueDocumentValidator;
 
 class UniqueDocumentValidatorTest extends TestCase
 {
+    /** @var UniqueDocumentValidator */
     private $validator;
+
+    /** @var \Symfony\Component\Validator\ExecutionContext */
+    private $context;
 
     protected function setUp()
     {
         parent::setUp();
 
         $this->validator = new UniqueDocumentValidator($this->mongator);
+        $this->context = \Mockery::mock('Symfony\Component\Validator\ExecutionContext')->shouldIgnoreMissing();
+        $this->validator->initialize($this->context);
     }
 
     /**
-      * @expectedException \InvalidArgumentException
-      * @dataProvider IsValidNotMongatorDocumentProvider
-      */
+     * @expectedException \InvalidArgumentException
+     * @dataProvider IsValidNotMongatorDocumentProvider
+     */
     public function testIsValidNotMongatorDocument($document)
     {
         $constraint = new UniqueDocument(array('fields' => array('title')));
-        $this->validator->isValid($document, $constraint);
+        $this->validator->validate($document, $constraint);
     }
 
     public function IsValidNotMongatorDocumentProvider()
@@ -43,7 +49,7 @@ class UniqueDocumentValidatorTest extends TestCase
      */
     public function testIsValidFieldsNotValid($fields)
     {
-        $this->validator->isValid($this->createArticle(), $this->createConstraint($fields));
+        $this->validator->validate($this->createArticle(), $this->createConstraint($fields));
     }
 
     public function isValidFieldsNotValidProvider()
@@ -59,9 +65,16 @@ class UniqueDocumentValidatorTest extends TestCase
     /**
      * @expectedException Symfony\Component\Validator\Exception\ConstraintDefinitionException
      */
-    public function testIsValidAtLeastOneField()
+    public function testIsValidAtLeastOneFieldEmpty()
     {
-        $this->validator->isValid($this->createArticle(), $this->createConstraint(array()));
+        $this->validator->validate($this->createArticle(), $this->createConstraint(array()));
+    }
+
+    public function testIsValidAtLeastOneFieldNotEmpty()
+    {
+        $this->assertTrue(
+            $this->validator->validate($this->createArticle(), $this->createConstraint(array('title')))
+        );
     }
 
     /**
@@ -72,7 +85,7 @@ class UniqueDocumentValidatorTest extends TestCase
     {
         $constraint = $this->createConstraint('title');
         $constraint->caseInsensitive = $caseInsensitive;
-        $this->validator->isValid($this->createArticle(), $constraint);
+        $this->validator->validate($this->createArticle(), $constraint);
     }
 
     public function isValidCaseInsensitiveNotValidProvider()
@@ -89,20 +102,20 @@ class UniqueDocumentValidatorTest extends TestCase
     public function testIsValidWithoutResults()
     {
         $article = $this->createArticle()->setTitle('foo');
-        $this->assertTrue($this->validator->isValid($article, $this->createConstraint('title')));
+        $this->assertTrue($this->validator->validate($article, $this->createConstraint('title')));
     }
 
     public function testIsValidSameResult()
     {
         $article = $this->createArticle()->setTitle('foo')->save();
-        $this->assertTrue($this->validator->isValid($article, $this->createConstraint('title')));
+        $this->assertTrue($this->validator->validate($article, $this->createConstraint('title')));
     }
 
     public function testIsValidOneField()
     {
         $article1 = $this->createArticle()->setTitle('foo')->save();
         $article2 = $this->createArticle()->setTitle('foo');
-        $this->assertFalse($this->validator->isValid($article2, $this->createConstraint('title')));
+        $this->assertFalse($this->validator->validate($article2, $this->createConstraint('title')));
     }
 
     public function testIsValidCaseInsensitive()
@@ -113,7 +126,23 @@ class UniqueDocumentValidatorTest extends TestCase
         $constraint = $this->createConstraint('title');
         $constraint->caseInsensitive = array('title');
 
-        $this->assertFalse($this->validator->isValid($article2, $constraint));
+        $this->assertFalse($this->validator->validate($article2, $constraint));
+    }
+
+    public function testIsValidCompat()
+    {
+        $validator = \Mockery::mock(
+            'Mongator\MongatorBundle\Validator\Constraint\UniqueDocumentValidator'
+        )->makePartial();
+        $validator
+            ->shouldReceive('validate')
+            ->once()
+            ->andReturn(true);
+
+        $article = $this->createArticle()->setTitle('foOO');
+        $constraint = $this->createConstraint('title');
+
+        $this->assertTrue($validator->isValid($article, $constraint));
     }
 
     private function createConstraint($fields)
