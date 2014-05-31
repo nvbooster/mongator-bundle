@@ -27,23 +27,28 @@ class Bundles extends Extension
      */
     protected function doClassProcess()
     {
-        foreach (array('bundle_name', 'bundle_namespace', 'bundle_dir') as $parameter) {
+        foreach (array('bundle_name', 'bundle_namespace', 'bundle_output') as $parameter) {
             if (!isset($this->configClass[$parameter]) || !$this->configClass[$parameter]) {
                 return;
             }
+        }
+
+        if (!isset($this->configClass['model_namespace'])) {
+            $this->configClass['model_namespace'] = 'Model';
         }
 
         /*
          * Definitions.
          */
         $classes = array(
-            'document_bundle'   => '%bundle_namespace%\Model\%class_name%',
-            'repository_bundle' => '%bundle_namespace%\Model\%class_name%Repository',
-            'query_bundle'      => '%bundle_namespace%\Model\%class_name%Query',
+            'document_bundle'   => '%bundle_namespace%\%model_namespace%\%class_name%',
+            'repository_bundle' => '%bundle_namespace%\%model_namespace%\%class_name%Repository',
+            'query_bundle'      => '%bundle_namespace%\%model_namespace%\%class_name%Query',
         );
         foreach ($classes as &$class) {
             $class = strtr($class, array(
                 '%bundle_namespace%' => $this->configClass['bundle_namespace'],
+                '%model_namespace%' => $this->configClass['model_namespace'],
                 '%class_name%'       => substr($this->class, strrpos($this->class, '\\') + 1),
             ));
         }
@@ -51,7 +56,7 @@ class Bundles extends Extension
         // document
         $this->definitions['document']->setParentClass('\\'.$classes['document_bundle']);
 
-        $output = new Output($this->configClass['bundle_dir'].'/Model');
+        $output = new Output($this->configClass['bundle_output']);
         $this->definitions['document_bundle'] = new Definition($classes['document_bundle'], $output);
         $this->definitions['document_bundle']->setParentClass('\\'.$this->definitions['document_base']->getClass());
         $this->definitions['document_bundle']->setAbstract(true);
@@ -66,7 +71,7 @@ EOF
             // repository
             $this->definitions['repository']->setParentClass('\\'.$classes['repository_bundle']);
 
-            $output = new Output($this->configClass['bundle_dir'].'/Model');
+            $output = new Output($this->configClass['bundle_output']);
             $this->definitions['repository_bundle'] = new Definition($classes['repository_bundle'], $output);
             $this->definitions['repository_bundle']->setParentClass('\\'.$this->definitions['repository_base']->getClass());
             $this->definitions['repository_bundle']->setDocComment(<<<EOF
@@ -79,7 +84,7 @@ EOF
             // query
             $this->definitions['query']->setParentClass('\\'.$classes['query_bundle']);
 
-            $output = new Output($this->configClass['bundle_dir'].'/Model');
+            $output = new Output($this->configClass['bundle_output']);
             $this->definitions['query_bundle'] = new Definition($classes['query_bundle'], $output);
             $this->definitions['query_bundle']->setParentClass('\\'.$this->definitions['query_base']->getClass());
             $this->definitions['query_bundle']->setDocComment(<<<EOF

@@ -9,8 +9,8 @@
       <parameter key="mongator.class">Mongator\Mongator</parameter>
       <parameter key="mongator.metadata_factory.class">Model\Mapping\MetadataFactory</parameter>
 
-      <parameter key="mongator.model_dir">%kernel.root_dir%/../src/Model</parameter>
-      <parameter key="mongator.metadata_factory.output">%mongator.model_dir%/Mapping</parameter>
+      <parameter key="mongator.model_dir">%kernel.root_dir%/../src</parameter>
+      <parameter key="mongator.metadata_factory.output">%mongator.model_dir%</parameter>
 
       <!-- cache -->
       <parameter key="mongator.cache.filesystem_cache.class">Mongator\Cache\FilesystemCache</parameter>
@@ -37,7 +37,6 @@
         <!-- mongator -->
         <service id="mongator" class="%mongator.class%">
             <argument type="service" id="mongator.metadata_factory" />
-            <argument type="service" id="mongator.cache.filesystem" />
         </service>
 
         <service id="mongator.metadata_factory" class="%mongator.metadata_factory.class%">

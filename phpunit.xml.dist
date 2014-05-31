@@ -32,10 +32,12 @@
 
     <filter>
         <whitelist>
-            <directory>./</directory>
+            <directory suffix=".php">./</directory>
             <exclude>
                 <directory>./Resources</directory>
                 <directory>./Tests</directory>
+                <directory>./vendor</directory>
+                <file>./vendors.php</file>
             </exclude>
         </whitelist>
     </filter>

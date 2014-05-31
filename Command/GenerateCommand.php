@@ -43,13 +43,14 @@ class GenerateCommand extends ContainerAwareCommand
     {
         $output->writeln('processing config classes');
 
-        $modelDir = $this->getContainer()->getParameter('mongator.model_dir');
+        $container = $this->getContainer();
+        $outputDir = $container->getParameter('mongator.model_dir');
 
         $configClasses = array();
         // application + extra
         foreach (array_merge(
-            array($this->getContainer()->getParameter('kernel.root_dir').'/config/mongator'),
-            $this->getContainer()->getParameter('mongator.extra_config_classes_dirs')
+            array($container->getParameter('kernel.root_dir').'/config/mongator'),
+            $container->getParameter('mongator.extra_config_classes_dirs')
         ) as $dir) {
             if (is_dir($dir)) {
                 $finder = new Finder();
@@ -61,10 +62,10 @@ class GenerateCommand extends ContainerAwareCommand
                         }
 
                         // config class
-                        $configClass['output'] = $modelDir.'/'.str_replace('\\', '/', substr(substr($class, 0, strrpos($class, '\\')), 6));
+                        $configClass['output']           = $outputDir;
+                        $configClass['bundle_output']    = null;
                         $configClass['bundle_name']      = null;
                         $configClass['bundle_namespace'] = null;
-                        $configClass['bundle_dir']       = null;
 
                         $configClasses[$class] = $configClass;
                     }
@@ -74,7 +75,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         // bundles
         $configClassesPending = array();
-        foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
+        foreach ($container->get('kernel')->getBundles() as $bundle) {
             $bundleModelNamespace = 'Model\\'.$bundle->getName();
 
             if (is_dir($dir = $bundle->getPath().'/Resources/config/mongator')) {
@@ -86,16 +87,16 @@ class GenerateCommand extends ContainerAwareCommand
                             throw new \RuntimeException('The mongator documents must been in the "Model\" namespace.');
                         }
                         if (0 !== strpos($class, $bundleModelNamespace)) {
-                            unset($configClass['output'], $configClass['bundle_name'], $configClass['bundle_dir']);
+                            unset($configClass['output'], $configClass['bundle_name'], $configClass['bundle_output']);
                             $configClassesPending[] = array('class' => $class, 'config_class' => $configClass);
                             continue;
                         }
 
                         // config class
-                        $configClass['output'] = $modelDir.'/'.str_replace('\\', '/', substr(substr($class, 0, strrpos($class, '\\')), 6));
+                        $configClass['output']           = $outputDir;
+                        $configClass['bundle_output']    = $outputDir;
                         $configClass['bundle_name']      = $bundle->getName();
                         $configClass['bundle_namespace'] = $bundle->getNamespace();
-                        $configClass['bundle_dir']       = $bundle->getPath();
 
                         if (isset($configClasses[$class])) {
                             $previousConfigClass = $configClasses[$class];
@@ -120,7 +121,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         $output->writeln('generating classes');
 
-        $mondator = $this->getContainer()->get('mongator.mondator');
+        $mondator = $container->get('mongator.mondator');
         $mondator->setConfigClasses($configClasses);
         $mondator->process();
     }
