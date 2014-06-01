@@ -15,7 +15,7 @@ use Mongator\Group\ReferenceGroup;
 use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\DataTransformer\TransformationFailedException;
+use Symfony\Component\Form\Exception\TransformationFailedException;
 
 /**
  * MongatorDocumentToArrayTransformer.

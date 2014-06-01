@@ -24,7 +24,8 @@
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*",
-        "mockery/mockery": "0.9.*"
+        "mockery/mockery": "0.9.*",
+        "symfony/form":"2.*"
     },
     "autoload": {
         "psr-4": { "Mongator\\MongatorBundle\\": "" }

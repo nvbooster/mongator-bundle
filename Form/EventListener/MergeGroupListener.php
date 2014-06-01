@@ -11,8 +11,8 @@
 
 namespace Mongator\MongatorBundle\Form\EventListener;
 
+use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\Event\FilterDataEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -24,10 +24,10 @@ class MergeGroupListener implements EventSubscriberInterface
 {
     public static function getSubscribedEvents()
     {
-        return array(FormEvents::BIND_NORM_DATA => 'onBindNormData');
+        return array(FormEvents::SUBMIT => 'onBindNormData');
     }
 
-    public function onBindNormData(FilterDataEvent $event)
+    public function onBindNormData(FormEvent $event)
     {
         $group = $event->getForm()->getData();
         $data = $event->getData();

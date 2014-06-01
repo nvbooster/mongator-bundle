@@ -11,7 +11,7 @@
 
 namespace Mongator\MongatorBundle\Form\ChoiceList;
 
-use Symfony\Component\Form\Extension\Core\ChoiceList\ArrayChoiceList;
+use Symfony\Component\Form\Extension\Core\ChoiceList\ChoiceList;
 use Mongator\Query;
 use Mongator\Mongator;
 
@@ -20,7 +20,7 @@ use Mongator\Mongator;
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class MongatorDocumentChoiceList extends ArrayChoiceList
+class MongatorDocumentChoiceList extends ChoiceList
 {
     private $mongator;
     private $class;
