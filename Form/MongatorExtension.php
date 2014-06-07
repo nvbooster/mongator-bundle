@@ -12,6 +12,7 @@
 namespace Mongator\MongatorBundle\Form;
 
 use Symfony\Component\Form\AbstractExtension;
+use Mongator\Mongator;
 
 /**
  * MongatorExtension.
@@ -20,15 +21,22 @@ use Symfony\Component\Form\AbstractExtension;
  */
 class MongatorExtension extends AbstractExtension
 {
+    private $mongator;
+
+    public function __construct(Mongator $mongator)
+    {
+        $this->mongator = $mongator;
+    }
+
     protected function loadTypes()
     {
         return array(
-            new Type\MongatorDocumentType(),
+            new Type\MongatorDocumentType($this->mongator),
         );
     }
 
     protected function loadTypeGuesser()
     {
-        return new MongatorTypeGuesser();
+        return new MongatorTypeGuesser($this->mongator->getMetadataFactory());
     }
 }

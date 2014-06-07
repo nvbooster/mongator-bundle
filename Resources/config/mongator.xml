@@ -26,6 +26,7 @@
       <parameter key="mongator.data_collector.class">Mongator\MongatorBundle\DataCollector\MongatorDataCollector</parameter>
 
       <!-- form -->
+      <parameter key="form.mongator_extension.class">Mongator\MongatorBundle\Form\MongatorExtension</parameter>
       <parameter key="form.type.mongator_document.class">Mongator\MongatorBundle\Form\Type\MongatorDocumentType</parameter>
       <parameter key="form.type_guesser.mongator.class">Mongator\MongatorBundle\Form\MongatorTypeGuesser</parameter>
 
@@ -63,6 +64,11 @@
         </service>
 
         <!-- form -->
+
+        <service id="form.mongator_extension" class="%form.mongator_extension.class%">
+            <argument type="service" id="mongator" />
+        </service>
+
         <service id="form.type.mongator_document" class="%form.type.mongator_document.class%">
             <tag name="form.type" alias="mongator_document" />
             <argument type="service" id="mongator" />

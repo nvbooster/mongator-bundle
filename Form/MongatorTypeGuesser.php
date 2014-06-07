@@ -104,4 +104,11 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
     public function guessMinLength($class, $property)
     {
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function guessPattern($class, $property)
+    {
+    }
 }

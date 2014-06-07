@@ -15,7 +15,7 @@ use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
 use Mongator\MongatorBundle\Form\DataTransformer\MongatorDocumentToIdTransformer;
 use Mongator\MongatorBundle\Form\DataTransformer\MongatorDocumentsToArrayTransformer;
 use Mongator\MongatorBundle\Form\EventListener\MergeGroupListener;
-use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\AbstractType;
 use Mongator\Mongator;
 
@@ -41,13 +41,12 @@ class MongatorDocumentType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function buildForm(FormBuilder $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if ($options['multiple']) {
             $builder
                 ->addEventSubscriber(new MergeGroupListener())
-                ->prependClientTransformer(new MongatorDocumentsToArrayTransformer($options['choice_list']))
-            ;
+                ->prependClientTransformer(new MongatorDocumentsToArrayTransformer($options['choice_list']));
         } else {
             $builder->prependClientTransformer(new MongatorDocumentToIdTransformer($options['choice_list']));
         }
@@ -63,10 +62,10 @@ class MongatorDocumentType extends AbstractType
             'multiple' => false,
             'expanded' => false,
             'mongator' => $this->mongator,
-            'class'    => null,
-            'field'    => null,
-            'query'    => null,
-            'choices'           => array(),
+            'class' => null,
+            'field' => null,
+            'query' => null,
+            'choices' => array(),
             'preferred_choices' => array(),
         );
 
@@ -88,7 +87,7 @@ class MongatorDocumentType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function getParent(array $options)
+    public function getParent()
     {
         return 'choice';
     }
