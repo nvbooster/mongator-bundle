@@ -29,6 +29,13 @@ class MongatorDocumentChoiceList extends ChoiceList
 
     private $documents;
 
+    /**
+     * @param Mongator $mongator
+     * @param string   $class
+     * @param string   $field
+     * @param Query    $query
+     * @param array    $choices
+     */
     public function __construct(Mongator $mongator, $class, $field = null, Query $query = null, array $choices = array())
     {
         $this->mongator = $mongator;
@@ -39,6 +46,9 @@ class MongatorDocumentChoiceList extends ChoiceList
         parent::__construct($choices);
     }
 
+    /**
+     * @return array
+     */
     public function getDocuments()
     {
         if (null === $this->documents) {

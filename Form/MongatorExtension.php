@@ -23,6 +23,9 @@ class MongatorExtension extends AbstractExtension
 {
     private $mongator;
 
+    /**
+     * @param Mongator $mongator
+     */
     public function __construct(Mongator $mongator)
     {
         $this->mongator = $mongator;

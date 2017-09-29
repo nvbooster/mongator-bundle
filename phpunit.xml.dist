@@ -37,11 +37,14 @@
                 <directory>./Resources</directory>
                 <directory>./Tests</directory>
                 <directory>./vendor</directory>
-                <file>./vendors.php</file>
             </exclude>
         </whitelist>
     </filter>
 
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
+    
     <logging>
         <log type="coverage-clover" target="build/logs/clover.xml"/>
     </logging>

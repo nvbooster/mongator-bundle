@@ -28,22 +28,11 @@ class UniqueDocumentValidator extends ConstraintValidator
     private $mongator;
 
     /**
-     * @param Mongator $madnango A mongator.
+     * @param Mongator $mongator A mongator.
      */
     public function __construct(Mongator $mongator)
     {
         $this->mongator = $mongator;
-    }
-
-    /**
-     * @param $value
-     * @param  Constraint $constraint
-     * @deprecated
-     * @return bool
-     */
-    public function isValid($value, Constraint $constraint)
-    {
-        return $this->validate($value, $constraint);
     }
 
     /**

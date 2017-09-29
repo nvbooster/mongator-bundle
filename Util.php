@@ -18,8 +18,10 @@ namespace Mongator\MongatorBundle;
  */
 class Util
 {
-    /*
+    /**
      * code from php at moechofe dot com (array_merge comment on php.net)
+     *
+     * @return array
      */
     public static function arrayDeepMerge()
     {
@@ -37,7 +39,7 @@ class Util
             $args = func_get_args();
             $args[2] = array();
             if (is_array($args[0]) && is_array($args[1])) {
-                foreach (array_unique(array_merge(array_keys($args[0]),array_keys($args[1]))) as $key) {
+                foreach (array_unique(array_merge(array_keys($args[0]), array_keys($args[1]))) as $key) {
                     $isKey0 = array_key_exists($key, $args[0]);
                     $isKey1 = array_key_exists($key, $args[1]);
 
@@ -61,7 +63,8 @@ class Util
 
                 return $args[2];
             } else {
-              return $args[1];
+
+                return $args[1];
             }
         }
 

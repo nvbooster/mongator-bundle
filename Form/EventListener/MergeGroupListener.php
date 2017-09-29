@@ -22,11 +22,17 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class MergeGroupListener implements EventSubscriberInterface
 {
+    /**
+     * @return array
+     */
     public static function getSubscribedEvents()
     {
         return array(FormEvents::SUBMIT => 'onBindNormData');
     }
 
+    /**
+     * @param FormEvent $event
+     */
     public function onBindNormData(FormEvent $event)
     {
         $group = $event->getForm()->getData();

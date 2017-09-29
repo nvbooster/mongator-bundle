@@ -101,8 +101,13 @@ EOF
         $this->definitions['document_base']->addMethod($method);
     }
 
-    /*
+
+    /**
      * Code from Symfony\Component\Validator\Mapping\Loader\YamlFileLoader
+     *
+     * @param array $nodes
+     *
+     * @return array
      */
     public static function parseNodes(array $nodes)
     {

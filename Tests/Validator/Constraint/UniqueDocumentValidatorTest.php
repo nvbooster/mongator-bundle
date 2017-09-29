@@ -11,7 +11,7 @@ class UniqueDocumentValidatorTest extends TestCase
     /** @var UniqueDocumentValidator */
     private $validator;
 
-    /** @var \Symfony\Component\Validator\ExecutionContext */
+    /** @var \Symfony\Component\Validator\Context\ExecutionContext */
     private $context;
 
     protected function setUp()
@@ -19,7 +19,7 @@ class UniqueDocumentValidatorTest extends TestCase
         parent::setUp();
 
         $this->validator = new UniqueDocumentValidator($this->mongator);
-        $this->context = \Mockery::mock('Symfony\Component\Validator\ExecutionContext')->shouldIgnoreMissing();
+        $this->context = \Mockery::mock('Symfony\Component\Validator\Context\ExecutionContext')->shouldIgnoreMissing();
         $this->validator->initialize($this->context);
     }
 
@@ -127,22 +127,6 @@ class UniqueDocumentValidatorTest extends TestCase
         $constraint->caseInsensitive = array('title');
 
         $this->assertFalse($this->validator->validate($article2, $constraint));
-    }
-
-    public function testIsValidCompat()
-    {
-        $validator = \Mockery::mock(
-            'Mongator\MongatorBundle\Validator\Constraint\UniqueDocumentValidator'
-        )->makePartial();
-        $validator
-            ->shouldReceive('validate')
-            ->once()
-            ->andReturn(true);
-
-        $article = $this->createArticle()->setTitle('foOO');
-        $constraint = $this->createConstraint('title');
-
-        $this->assertTrue($validator->isValid($article, $constraint));
     }
 
     private function createConstraint($fields)

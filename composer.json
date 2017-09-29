@@ -1,5 +1,5 @@
 {
-    "name": "mongator/mongator-bundle",
+    "name": "nvbooster/mongator-bundle",
     "description": "Bundle to use Mongator with Symfony2",
     "keywords": ["mongodb", "mongator"],
     "type": "symfony-bundle",
@@ -12,24 +12,34 @@
         {
             "name": "Dario Mancuso",
             "email": "dario@ewide.eu"
+        },
+        {
+            "name" : "Vyacheslav Nechipurenko",
+            "email" : "nvb@aproxima.ru"
         }
     ],
     "require": {
         "php": ">=5.3.3",
-        "ext-mongo": ">=1.3.2",
         "symfony/framework-bundle": "2.*",
         "symfony/console":"2.*",
         "symfony/validator": "2.*",
-        "mongator/mongator": "1.4.*"
+        "mongator/mongator": "~1.4",
+        "mongofill/mongofill": "dev-master",
+        "twig/twig": "~1.2"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.*",
         "mockery/mockery": "0.9.*",
-        "symfony/form":"2.*"
+        "symfony/form":"2.*",
+        "symfony/phpunit-bridge": "~2.8"
+    },
+    "conflict": {
+        "mongator/mongator-bundle": "*"
     },
     "autoload": {
         "psr-4": { "Mongator\\MongatorBundle\\": "" }
     },
+    "minimum-stability" : "dev",
     "extra": {
         "branch-alias": {
             "dev-master": "1.1-dev"

@@ -23,6 +23,9 @@ use Symfony\Component\DependencyInjection\Definition;
  */
 class MongatorMondatorPass implements CompilerPassInterface
 {
+    /**
+     * @param ContainerBuilder $container
+     */
     public function process(ContainerBuilder $container)
     {
         if (false === $container->hasDefinition('mongator.mondator')) {

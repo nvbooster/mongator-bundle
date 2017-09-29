@@ -63,7 +63,6 @@ class Configuration
                 ->arrayNode('connections')
                     ->useAttributeAsKey('id')
                     ->prototype('array')
-                        //->performNoDeepMerging()
                         ->children()
                             ->scalarNode('class')->defaultValue('Mongator\Connection')->end()
                             ->scalarNode('server')->end()

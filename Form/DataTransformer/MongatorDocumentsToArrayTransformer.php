@@ -26,11 +26,21 @@ class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
 {
     private $choiceList;
 
+    /**
+     * @param MongatorDocumentChoiceList $choiceList
+     */
     public function __construct(MongatorDocumentChoiceList $choiceList)
     {
         $this->choiceList = $choiceList;
     }
 
+    /**
+     * @param ReferenceGroup $group
+     *
+     * @throws UnexpectedTypeException
+     *
+     * @return array
+     */
     public function transform($group)
     {
         if (null === $group) {
@@ -49,6 +59,13 @@ class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
         return $array;
     }
 
+    /**
+     * @param array $keys
+     *
+     * @throws TransformationFailedException
+     *
+     * @return array
+     */
     public function reverseTransform($keys)
     {
         $documents = $this->choiceList->getDocuments();

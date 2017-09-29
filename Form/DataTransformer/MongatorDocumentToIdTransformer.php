@@ -11,6 +11,7 @@
 
 namespace Mongator\MongatorBundle\Form\DataTransformer;
 
+use Mongator\Document\Document;
 use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -23,11 +24,19 @@ class MongatorDocumentToIdTransformer implements DataTransformerInterface
 {
     private $choiceList;
 
+    /**
+     * @param MongatorDocumentChoiceList $choiceList
+     */
     public function __construct(MongatorDocumentChoiceList $choiceList)
     {
         $this->choiceList = $choiceList;
     }
 
+    /**
+     * @param Document $document
+     *
+     * @return string
+     */
     public function transform($document)
     {
         if (null === $document) {
@@ -37,6 +46,11 @@ class MongatorDocumentToIdTransformer implements DataTransformerInterface
         return (string) $document->getId();
     }
 
+    /**
+     * @param string $key
+     *
+     * @return Document
+     */
     public function reverseTransform($key)
     {
         if (null === $key) {

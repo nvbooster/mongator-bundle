@@ -28,7 +28,7 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
     /**
      * Constructor.
      *
-     * @param Mongator\MetadataFactory $metadata The Mongator's metadata.
+     * @param Mongator\MetadataFactory $metadataFactory The Mongator's metadata.
      */
     public function __construct(MetadataFactory $metadataFactory)
     {
@@ -36,7 +36,9 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @see \Symfony\Component\Form\FormTypeGuesserInterface::guessType()
      */
     public function guessType($class, $property)
     {
@@ -85,28 +87,36 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @see \Symfony\Component\Form\FormTypeGuesserInterface::guessRequired()
      */
     public function guessRequired($class, $property)
     {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @see \Symfony\Component\Form\FormTypeGuesserInterface::guessMaxLength()
      */
     public function guessMaxLength($class, $property)
     {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @see \Symfony\Component\Form\FormTypeGuesserInterface::guessPattern()
      */
     public function guessMinLength($class, $property)
     {
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
+     * @see \Symfony\Component\Form\FormTypeGuesserInterface::guessPattern()
      */
     public function guessPattern($class, $property)
     {
