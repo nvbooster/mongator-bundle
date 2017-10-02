@@ -11,7 +11,6 @@
 
 namespace Mongator\MongatorBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -34,30 +33,22 @@ class MongatorExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $configuration = new Configuration();
+        $config = $this->processConfiguration($configuration, $configs);
+
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('mongator.xml');
 
-        $processor = new Processor();
-        $configuration = new Configuration($container->getParameter('kernel.debug'));
-        $config = $processor->process($configuration->getConfigTree(), $configs);
+        $mongatorDefiniton = $container->getDefinition('mongator');
 
         // model_dir
-        if (isset($config['model_dir'])) {
-            $container->setParameter('mongator.model_dir', $config['model_dir']);
-        }
-
-        // logging
-        if (isset($config['logging']) && $config['logging']) {
-            $container->getDefinition('mongator')->addArgument(array(new Reference('mongator.logger'), 'logQuery'));
-        }
-
-        // default_connection
-        if (isset($config['default_connection'])) {
-            $container->getDefinition('mongator')->addMethodCall('setDefaultConnectionName', array($config['default_connection']));
-        }
-
+        $container->setParameter('mongator.model_dir', $config['model_dir']);
         // extra config classes dirs
         $container->setParameter('mongator.extra_config_classes_dirs', $config['extra_config_classes_dirs']);
+
+
+        // default_connection
+        $mongatorDefiniton->addMethodCall('setDefaultConnectionName', array($config['default_connection']));
 
         // connections
         foreach ($config['connections'] as $name => $connection) {

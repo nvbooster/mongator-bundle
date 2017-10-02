@@ -11,12 +11,12 @@
 
 namespace Mongator\MongatorBundle\Command;
 
+use Mongator\MongatorBundle\Util;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
-use Mongator\MongatorBundle\Util;
 
 /**
  * GenerateCommand.
@@ -81,7 +81,7 @@ class GenerateCommand extends ContainerAwareCommand
             if (is_dir($dir = $bundle->getPath().'/Resources/config/mongator')) {
                 $finder = new Finder();
                 foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
-                    foreach ((array) Yaml::parse($file) as $class => $configClass) {
+                    foreach ((array) Yaml::parse(file_get_contents($file)) as $class => $configClass) {
                         // class
                         if (0 !== strpos($class, 'Model\\')) {
                             throw new \RuntimeException('The mongator documents must been in the "Model\" namespace.');

@@ -11,18 +11,19 @@
 
 namespace Mongator\MongatorBundle\Security;
 
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Mongator\Mongator;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
-use Mongator\Mongator;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 /**
  * MongatorUserProvider.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class MongatorUserProvider implements UserProviderInterface
+class MongatorUserProvider implements UserLoaderInterface
 {
     private $mongator;
     private $class;

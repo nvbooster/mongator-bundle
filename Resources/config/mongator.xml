@@ -19,14 +19,7 @@
       <!-- mondator -->
       <parameter key="mongator.mondator.class">Mandango\Mondator\Mondator</parameter>
 
-      <!-- logger -->
-      <parameter key="mongator.logger.class">Mongator\MongatorBundle\Logger\MongatorLogger</parameter>
-
-      <!-- data collector -->
-      <parameter key="mongator.data_collector.class">Mongator\MongatorBundle\DataCollector\MongatorDataCollector</parameter>
-
       <!-- form -->
-      <parameter key="form.mongator_extension.class">Mongator\MongatorBundle\Form\MongatorExtension</parameter>
       <parameter key="form.type.mongator_document.class">Mongator\MongatorBundle\Form\Type\MongatorDocumentType</parameter>
       <parameter key="form.type_guesser.mongator.class">Mongator\MongatorBundle\Form\MongatorTypeGuesser</parameter>
 
@@ -52,22 +45,7 @@
         <service id="mongator.mondator" class="%mongator.mondator.class%">
         </service>
 
-        <!-- logger -->
-        <service id="mongator.logger" class="%mongator.logger.class%">
-            <argument type="service" id="logger" on-invalid="null" />
-        </service>
-
-        <!-- data collector -->
-        <service id="mongator.data_collector" class="%mongator.data_collector.class%" public="false">
-            <tag name="data_collector" template="MongatorBundle:Collector:mongator" id="mongator" />
-            <argument type="service" id="mongator.logger" />
-        </service>
-
         <!-- form -->
-
-        <service id="form.mongator_extension" class="%form.mongator_extension.class%">
-            <argument type="service" id="mongator" />
-        </service>
 
         <service id="form.type.mongator_document" class="%form.type.mongator_document.class%">
             <tag name="form.type" alias="mongator_document" />

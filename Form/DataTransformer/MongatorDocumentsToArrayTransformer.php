@@ -12,10 +12,8 @@
 namespace Mongator\MongatorBundle\Form\DataTransformer;
 
 use Mongator\Group\ReferenceGroup;
-use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
-use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\DataTransformerInterface;
-use Symfony\Component\Form\Exception\TransformationFailedException;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 /**
  * MongatorDocumentToArrayTransformer.
@@ -24,15 +22,6 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
  */
 class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
 {
-    private $choiceList;
-
-    /**
-     * @param MongatorDocumentChoiceList $choiceList
-     */
-    public function __construct(MongatorDocumentChoiceList $choiceList)
-    {
-        $this->choiceList = $choiceList;
-    }
 
     /**
      * @param ReferenceGroup $group
@@ -51,33 +40,18 @@ class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
             throw new UnexpectedTypeException($group, 'Mongator\Group\ReferenceGroup');
         }
 
-        $array = array();
-        foreach ($group as $document) {
-            $array[] = (string) $document->getId();
-        }
-
-        return $array;
+        return iterator_to_array($group, false);
     }
 
     /**
-     * @param array $keys
+     * @param array $array
      *
      * @throws TransformationFailedException
      *
      * @return array
      */
-    public function reverseTransform($keys)
+    public function reverseTransform($array)
     {
-        $documents = $this->choiceList->getDocuments();
-
-        $array = array();
-        foreach ($keys as $key) {
-            if (!isset($documents[(string) $key])) {
-                throw new TransformationFailedException('Some Mongator document does not exist.');
-            }
-            $array[] = $documents[(string) $key];
-        }
-
         return $array;
     }
 }

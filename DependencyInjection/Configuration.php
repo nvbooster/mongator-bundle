@@ -11,7 +11,7 @@
 
 namespace Mongator\MongatorBundle\DependencyInjection;
 
-use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
 /**
@@ -21,25 +21,45 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class Configuration
+class Configuration implements ConfigurationInterface
 {
+
     /**
-     * Generates the configuration tree.
-     *
-     * @return Symfony\Component\DependencyInjection\Configuration\NodeInterface
+     * {@inheritDoc}
      */
-    public function getConfigTree()
+    public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('mongator', 'array');
 
         $rootNode
             ->children()
-                ->scalarNode('model_dir')->end()
-                ->booleanNode('logging')->end()
+                ->scalarNode('model_dir')->defaultValue('%kernel.root_dir%/../src')->cannotBeEmpty()->end()
+            ->end()
+            ->beforeNormalization()
+                ->ifTrue(function ($v) { return is_array($v) && !array_key_exists('connections', $v) && !array_key_exists('connection', $v); })
+                ->then(function ($v) {
+                    // Key that should not be rewritten to the connection config
+                    $excludedKeys = array('default_connection' => true);
+                    $connection = array();
+                    foreach (array_keys($v) as $key) {
+                        if (isset($excludedKeys[$key])) {
+                            continue;
+                        }
+                        $connection[$key] = $v[$key];
+                        unset($v[$key]);
+                    }
+                    $v['default_connection'] = isset($v['default_connection']) ? (string) $v['default_connection'] : 'default';
+                    $v['connections'] = array($v['default_connection'] => $connection);
+
+                    return $v;
+                })
+            ->end()
+            ->children()
                 ->scalarNode('default_connection')->end()
             ->end()
-
+            ->fixXmlConfig('connection')
+            ->append($this->getConnectionsNode())
             ->fixXmlConfig('extra_config_classes_dir')
             ->children()
                 ->arrayNode('extra_config_classes_dirs')
@@ -47,41 +67,39 @@ class Configuration
             ->end()
         ;
 
-        $this->addConnectionsSection($rootNode);
-
-        return $treeBuilder->buildTree();
+        return $treeBuilder;
     }
 
-    /**
-     * Adds the configuration for the "connections" key
-     */
-    protected function addConnectionsSection($rootNode)
+    protected function getConnectionsNode()
     {
-        $rootNode
-            ->fixXmlConfig('connection')
-            ->children()
-                ->arrayNode('connections')
-                    ->useAttributeAsKey('id')
-                    ->prototype('array')
-                        ->children()
-                            ->scalarNode('class')->defaultValue('Mongator\Connection')->end()
-                            ->scalarNode('server')->end()
-                            ->scalarNode('database')->end()
-                        ->end()
-                        ->append($this->addConnectionOptionsNode())
-                    ->end()
-                ->end()
-            ->end()
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('connections');
+
+        $connectionNode = $node
+            ->requiresAtLeastOneElement()
+            ->useAttributeAsKey('name')
+            ->prototype('array')
         ;
+
+        $connectionNode
+            ->children()
+                ->scalarNode('class')->defaultValue('Mongator\Connection')->cannotBeEmpty()->end()
+                ->scalarNode('server')->isRequired()->cannotBeEmpty()->end()
+                ->scalarNode('database')->isRequired()->cannotBeEmpty()->end()
+            ->end()
+            ->append($this->getConnectionOptionsNode())
+        ;
+
+        return $node;
     }
 
     /**
      * Adds the NodeBuilder for the "options" key of a connection.
      */
-    protected function addConnectionOptionsNode()
+    protected function getConnectionOptionsNode()
     {
-        $builder = new TreeBuilder();
-        $node = $builder->root('options');
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('options');
 
         $node
             ->performNoDeepMerging()

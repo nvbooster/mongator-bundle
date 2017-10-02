@@ -4,3 +4,4 @@
 /vendor/
 /Tests/Model/Base/
 /Tests/Model/Mapping/
+/composer.lock

@@ -1,27 +1,19 @@
 <?php
 
-/*
- * This file is part of Mongator.
- *
- * (c) Pablo Díez <pablodip@gmail.com>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
-
 namespace Mongator\MongatorBundle\Validator\Constraint;
 
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintValidator;
-use Symfony\Component\Validator\Exception\UnexpectedTypeException;
-use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 use Mongator\Mongator;
 use Mongator\Document\Document;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 /**
  * UniqueConstraint.
  *
- * @author Pablo Díez <pablodip@gmail.com>
+ * fixes compatibility errors
  */
 class UniqueDocumentValidator extends ConstraintValidator
 {
@@ -38,10 +30,10 @@ class UniqueDocumentValidator extends ConstraintValidator
     /**
      * Validates the document uniqueness.
      *
-     * @param value      $value      The document.
+     * @param Document   $value      The document.
      * @param Constraint $constraint The constraint.
      *
-     * @return Boolean Whether or not the document is unique.
+     * @return bool Whether or not the document is unique.
      */
     public function validate($value, Constraint $constraint)
     {
@@ -64,7 +56,9 @@ class UniqueDocumentValidator extends ConstraintValidator
         }
 
         if ($this->context) {
-            $this->addFieldViolation($fields[0], $constraint->message);
+            $this->context->buildViolation($constraint->message)
+                ->atPath($fields[0])
+                ->addViolation();
         }
 
         return false;
@@ -117,19 +111,11 @@ class UniqueDocumentValidator extends ConstraintValidator
         foreach ($fields as $field) {
             $value = $document->get($field);
             if (in_array($field, $caseInsensitive)) {
-                $value = new \MongoRegex(sprintf('/^%s$/i', preg_quote($value)));
+                $value = new Regex(sprintf('/^%s$/i', preg_quote($value)));
             }
             $criteria[$field] = $value;
         }
 
         return $criteria;
-    }
-
-    private function addFieldViolation($field, $message)
-    {
-        $oldPath = $this->context->getPropertyPath();
-        $this->context->setPropertyPath(empty($oldPath) ? $field : $oldPath.'.'.$field);
-        $this->context->addViolation($message, array(), null);
-        $this->context->setPropertyPath($oldPath);
     }
 }

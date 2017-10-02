@@ -11,10 +11,17 @@
 
 namespace Mongator\MongatorBundle\Form;
 
+use Mongator\MetadataFactory;
+use Mongator\MongatorBundle\Form\Type\MongatorDocumentType;
 use Symfony\Component\Form\FormTypeGuesserInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
-use Mongator\MetadataFactory;
 
 /**
  * MongatorTypeGuesser
@@ -23,12 +30,15 @@ use Mongator\MetadataFactory;
  */
 class MongatorTypeGuesser implements FormTypeGuesserInterface
 {
+    /**
+     * @var MetadataFactory
+     */
     private $metadataFactory;
 
     /**
      * Constructor.
      *
-     * @param Mongator\MetadataFactory $metadataFactory The Mongator's metadata.
+     * @param MetadataFactory $metadataFactory The Mongator's metadata.
      */
     public function __construct(MetadataFactory $metadataFactory)
     {
@@ -52,34 +62,34 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
         if (isset($metadata['fields'][$property])) {
             switch ($metadata['fields'][$property]['type']) {
                 case 'bin_data':
-                    return new TypeGuess('file', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(FileType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'boolean':
-                    return new TypeGuess('checkbox', array(), Guess::HIGH_CONFIDENCE);
+                    return new TypeGuess(CheckboxType::class, array(), Guess::HIGH_CONFIDENCE);
                 case 'date':
-                    return new TypeGuess('date', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(DateType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'float':
-                    return new TypeGuess('number', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(NumberType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'integer':
-                    return new TypeGuess('integer', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(IntegerType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'raw':
-                    return new TypeGuess('text', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'serialized':
-                    return new TypeGuess('text', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
                 case 'string':
-                    return new TypeGuess('text', array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
             }
         }
 
         // referencesOne
         if (isset($metadata['referencesOne'][$property])) {
-            return new TypeGuess('mongator_document', array(
+            return new TypeGuess(MongatorDocumentType::class, array(
                 'class' => $metadata['referencesOne'][$property]['class'],
             ), Guess::HIGH_CONFIDENCE);
         }
 
         // referencesMany
         if (isset($metadata['referencesMany'][$property])) {
-            return new TypeGuess('mongator_document', array(
+            return new TypeGuess(MongatorDocumentType::class, array(
                 'class' => $metadata['referencesMany'][$property]['class'],
                 'multiple' => true,
             ), Guess::HIGH_CONFIDENCE);

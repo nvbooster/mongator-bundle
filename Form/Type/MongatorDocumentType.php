@@ -11,13 +11,15 @@
 
 namespace Mongator\MongatorBundle\Form\Type;
 
-use Mongator\MongatorBundle\Form\ChoiceList\MongatorDocumentChoiceList;
-use Mongator\MongatorBundle\Form\DataTransformer\MongatorDocumentToIdTransformer;
+use Mongator\Mongator;
 use Mongator\MongatorBundle\Form\DataTransformer\MongatorDocumentsToArrayTransformer;
 use Mongator\MongatorBundle\Form\EventListener\MergeGroupListener;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\AbstractType;
-use Mongator\Mongator;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Exception\InvalidConfigurationException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\OptionsResolver\Options;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * MongatorDocumentType.
@@ -26,6 +28,9 @@ use Mongator\Mongator;
  */
 class MongatorDocumentType extends AbstractType
 {
+    /**
+     * @var Mongator
+     */
     private $mongator;
 
     /**
@@ -46,42 +51,45 @@ class MongatorDocumentType extends AbstractType
         if ($options['multiple']) {
             $builder
                 ->addEventSubscriber(new MergeGroupListener())
-                ->prependClientTransformer(new MongatorDocumentsToArrayTransformer($options['choice_list']));
-        } else {
-            $builder->prependClientTransformer(new MongatorDocumentToIdTransformer($options['choice_list']));
+                ->addViewTransformer(new MongatorDocumentsToArrayTransformer(), true);
         }
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
+     *
+     * @see AbstractType::configureOptions()
      */
-    public function getDefaultOptions(array $options)
+    public function configureOptions(OptionsResolver $resolver)
     {
-        $defaultOptions = array(
-            'template' => 'choice',
-            'multiple' => false,
-            'expanded' => false,
-            'mongator' => $this->mongator,
-            'class' => null,
-            'field' => null,
-            'query' => null,
-            'choices' => array(),
-            'preferred_choices' => array(),
-        );
+        $choices = function (Options $options) {
 
-        $options = array_replace($defaultOptions, $options);
+            if (!$this->mongator->getMetadataFactory()->hasClass($options['class'])) {
+                throw new InvalidConfigurationException(sprintf('Class %s is not registered in mongator', $options['class']));
+            }
 
-        if (!isset($options['choice_list'])) {
-            $defaultOptions['choice_list'] = new MongatorDocumentChoiceList(
-                $options['mongator'],
-                $options['class'],
-                $options['field'],
-                $options['query'],
-                $options['choices']
-            );
-        }
+            $collection = (is_array($options['criteria']) && count($options['criteria'])) ?
+                $this->mongator->getRepository($options['class'])->createQuery()->criteria($options['criteria']) :
+                $this->mongator->getRepository($options['class'])->createQuery()->all()
+            ;
 
-        return $defaultOptions;
+            $choices = array();
+            foreach ($collection as $document) {
+                $choices[(string) $document->getId()] = $document;
+            }
+
+            return $choices;
+        };
+
+        $resolver->setDefaults(array(
+            'choice_label' => function($choice) { return (string) $choice; },
+            'criteria' => array(),
+            'choices' => $choices,
+        ));
+
+        $resolver->setRequired('class');
+        $resolver->addAllowedTypes('class', 'string');
+        $resolver->addAllowedTypes('criteria', 'array');
     }
 
     /**
@@ -89,13 +97,13 @@ class MongatorDocumentType extends AbstractType
      */
     public function getParent()
     {
-        return 'choice';
+        return ChoiceType::class;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'mongator_document';
     }
