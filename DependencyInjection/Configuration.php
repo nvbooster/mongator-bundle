@@ -37,10 +37,12 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('model_dir')->defaultValue('%kernel.root_dir%/../src')->cannotBeEmpty()->end()
             ->end()
             ->beforeNormalization()
-                ->ifTrue(function ($v) { return is_array($v) && !array_key_exists('connections', $v) && !array_key_exists('connection', $v); })
+                ->ifTrue(function ($v) {
+                    return is_array($v) && !array_key_exists('connections', $v) && !array_key_exists('connection', $v);
+                })
                 ->then(function ($v) {
                     // Key that should not be rewritten to the connection config
-                    $excludedKeys = array('default_connection' => true);
+                    $excludedKeys = array('default_connection' => true, 'extra_config_classes_dir' => true);
                     $connection = array();
                     foreach (array_keys($v) as $key) {
                         if (isset($excludedKeys[$key])) {
@@ -63,7 +65,8 @@ class Configuration implements ConfigurationInterface
             ->fixXmlConfig('extra_config_classes_dir')
             ->children()
                 ->arrayNode('extra_config_classes_dirs')
-                ->prototype('scalar')->end()
+                    ->prototype('scalar')->cannotBeEmpty()->end()
+                ->end()
             ->end()
         ;
 
