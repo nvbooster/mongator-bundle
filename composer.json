@@ -35,6 +35,9 @@
 	"conflict" : {
 		"mongator/mongator-bundle" : "*"
 	},
+	"replace" : {
+		"mongator/mongator-bundle" : "self.version"
+	},
 	"autoload" : {
 		"psr-4" : {
 			"Mongator\\MongatorBundle\\" : ""
