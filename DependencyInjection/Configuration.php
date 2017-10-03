@@ -42,7 +42,7 @@ class Configuration implements ConfigurationInterface
                 })
                 ->then(function ($v) {
                     // Key that should not be rewritten to the connection config
-                    $excludedKeys = array('default_connection' => true, 'extra_config_classes_dir' => true);
+                    $excludedKeys = array('default_connection' => true, 'extra_config_classes_dirs' => true);
                     $connection = array();
                     foreach (array_keys($v) as $key) {
                         if (isset($excludedKeys[$key])) {
