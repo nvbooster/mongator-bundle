@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
  * GenerateCommand.
@@ -33,6 +34,7 @@ class GenerateCommand extends ContainerAwareCommand
         $this
             ->setName('mongator:generate')
             ->setDescription('Generate classes from config classes')
+            ->addOption('bundle-models', 'b', InputOption::VALUE_NONE, 'Generate intermediate models inside bundles')
         ;
     }
 
@@ -42,6 +44,8 @@ class GenerateCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln('processing config classes');
+
+        $intermediate = $input->getOption('bundle-models');
 
         $container = $this->getContainer();
         $outputDir = $container->getParameter('mongator.model_dir');
@@ -94,9 +98,10 @@ class GenerateCommand extends ContainerAwareCommand
 
                         // config class
                         $configClass['output']           = $outputDir;
-                        $configClass['bundle_output']    = $outputDir;
+                        $configClass['bundle_output']    = $bundle->getPath();
                         $configClass['bundle_name']      = $bundle->getName();
                         $configClass['bundle_namespace'] = $bundle->getNamespace();
+                        $configClass['bundle_models']    = $intermediate;
 
                         if (isset($configClasses[$class])) {
                             $previousConfigClass = $configClasses[$class];
