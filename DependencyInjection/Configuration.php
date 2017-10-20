@@ -42,13 +42,13 @@ class Configuration implements ConfigurationInterface
                 })
                 ->then(function ($v) {
                     // Key that should not be rewritten to the connection config
-                    $excludedKeys = array('default_connection' => true, 'extra_config_classes_dirs' => true);
+                    $excludedKeys = array('default_connection', 'extra_config_classes_dirs', 'mapping');
                     $connection = array();
-                    foreach (array_keys($v) as $key) {
-                        if (isset($excludedKeys[$key])) {
+                    foreach ($v as $key => $value) {
+                        if (in_array($key, $excludedKeys)) {
                             continue;
                         }
-                        $connection[$key] = $v[$key];
+                        $connection[$key] = $value;
                         unset($v[$key]);
                     }
                     $v['default_connection'] = isset($v['default_connection']) ? (string) $v['default_connection'] : 'default';
@@ -68,6 +68,7 @@ class Configuration implements ConfigurationInterface
                     ->prototype('scalar')->cannotBeEmpty()->end()
                 ->end()
             ->end()
+            ->append($this->getTypesNode())
         ;
 
         return $treeBuilder;
@@ -91,6 +92,32 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('database')->isRequired()->cannotBeEmpty()->end()
             ->end()
             ->append($this->getConnectionOptionsNode())
+        ;
+
+        return $node;
+    }
+
+    protected function getTypesNode()
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root('mapping');
+
+        $typeNode = $node
+            ->requiresAtLeastOneElement()
+            ->useAttributeAsKey('name')
+            ->prototype('array')
+        ;
+
+        $typeNode
+            ->beforeNormalization()
+                ->ifString()
+                ->then(function ($v) {
+                    return array('class' => $v);
+                })
+            ->end()
+            ->children()
+                ->scalarNode('class')->isRequired()->cannotBeEmpty()->end()
+            ->end()
         ;
 
         return $node;

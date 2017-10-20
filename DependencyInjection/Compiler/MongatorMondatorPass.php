@@ -36,6 +36,7 @@ class MongatorMondatorPass implements CompilerPassInterface
 
         // core
         $definition = new Definition('Mongator\Extension\Core');
+        $definition->setPublic(false);
         $definition->addArgument(array(
             'metadata_factory_class'  => $container->getParameter('mongator.metadata_factory.class'),
             'metadata_factory_output' => $container->getParameter('mongator.metadata_factory.output'),
@@ -49,15 +50,32 @@ class MongatorMondatorPass implements CompilerPassInterface
 
         // bundles
         $definition = new Definition('Mongator\MongatorBundle\Extension\Bundles');
+        $definition->setPublic(false);
         $container->setDefinition('mongator.extension.bundles', $definition);
 
         $mondatorDefinition->addMethodCall('addExtension', array(new Reference('mongator.extension.bundles')));
 
         // validation
         $definition = new Definition('Mongator\MongatorBundle\Extension\DocumentValidation');
+        $definition->setPublic(false);
         $container->setDefinition('mongator.extension.document_validation', $definition);
 
         $mondatorDefinition->addMethodCall('addExtension', array(new Reference('mongator.extension.document_validation')));
+
+        // type extension
+        $definition = new Definition('Mongator\MongatorBundle\Extension\CustomType');
+        $definition->setPublic(false);
+        $container->setDefinition('mongator.extension.custom_types', $definition);
+
+        foreach ($container->findTaggedServiceIds('mongator.type') as $id => $tagAttributes) {
+            foreach ($tagAttributes as $attributes) {
+                $definition
+                    ->addMethodCall('addCustomType', [$attributes['alias'], $container->getDefinition($id)->getClass()]);
+            }
+            $container->removeDefinition($id);
+        }
+
+        $mondatorDefinition->addMethodCall('addExtension', array(new Reference('mongator.extension.custom_types')));
 
         // custom
         foreach ($container->findTaggedServiceIds('mongator.mondator.extension') as $id => $attributes) {

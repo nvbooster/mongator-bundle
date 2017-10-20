@@ -31,6 +31,9 @@
         <!-- mongator -->
         <service id="mongator" class="%mongator.class%">
             <argument type="service" id="mongator.metadata_factory" />
+            <call method="setEventDispatcher">
+            	<argument type="service" id="event_dispatcher" on-invalid="null" />
+            </call>
         </service>
 
         <service id="mongator.metadata_factory" class="%mongator.metadata_factory.class%">

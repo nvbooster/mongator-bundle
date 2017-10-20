@@ -67,5 +67,16 @@ class MongatorExtension extends Extension
                 new Reference($connectionDefinitionName),
             ));
         }
+
+        $types = [];
+        foreach ($config['mapping'] as $key => $type) {
+            $definition = new Definition($type['class']);
+            $definition->setPublic(false);
+            $definition->addTag('mongator.type', ['alias' => $key]);
+
+            $types[] = $definition;
+        }
+
+        $container->addDefinitions($types);
     }
 }
