@@ -53,12 +53,12 @@ class LoadFixturesCommand extends ContainerAwareCommand
         } else {
             $dirOrFile = array();
             // application
-            if (is_dir($dir = $this->getContainer()->getParameter('kernel.root_dir').'/fixtures/mongator')) {
+            if (is_dir($dir = $this->getContainer()->getParameter('kernel.root_dir').'/DataFixtures/Mongator')) {
                 $dirOrFile[] = $dir;
             }
             // bundles
             foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
-                if (is_dir($dir = $bundle->getPath().'/Resources/fixtures/mongator')) {
+                if (is_dir($dir = $bundle->getPath().'/DataFixtures/Mongator')) {
                     $dirOrFile[] = $dir;
                 }
             }
@@ -83,7 +83,7 @@ class LoadFixturesCommand extends ContainerAwareCommand
 
         $data = array();
         foreach ($files as $file) {
-            $data = Util::arrayDeepMerge($data, (array) Yaml::parse($file));
+            $data = Util::arrayDeepMerge($data, (array) Yaml::parse(file_get_contents($file)));
         }
 
         if (!$data) {
