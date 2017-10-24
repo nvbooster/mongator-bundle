@@ -87,7 +87,7 @@ class LoadFixturesCommand extends ContainerAwareCommand
         }
 
         if (!$data) {
-            $output->writeln('there are not fixtures');
+            $output->writeln('there are no fixtures');
 
             return;
         }
