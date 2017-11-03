@@ -17,13 +17,14 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 
 /**
  * MongatorBundle.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class MongatorExtension extends Extension
+class MongatorExtension extends Extension implements PrependExtensionInterface
 {
     /**
      * Responds to the "mongator" configuration parameter.
@@ -78,5 +79,26 @@ class MongatorExtension extends Extension
         }
 
         $container->addDefinitions($types);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function prepend(ContainerBuilder $container)
+    {
+        $bundles = $container->getParameter('kernel.bundles');
+
+        if (isset($bundles['JMSSerializerBundle'])) {
+            $container->prependExtensionConfig('jms_serializer', array(
+                'metadata' => array(
+                    'directories' => array(
+                        'mongator' => array(
+                            'namespace_prefix' => 'Mongator\\Document',
+                            'path' => '@MongatorBundle/Resources/config/jms_serializer',
+                        )
+                    )
+                )
+            ));
+        }
     }
 }

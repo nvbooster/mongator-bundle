@@ -32,7 +32,7 @@
         <service id="mongator" class="%mongator.class%">
             <argument type="service" id="mongator.metadata_factory" />
             <call method="setEventDispatcher">
-            	<argument type="service" id="event_dispatcher" on-invalid="null" />
+                <argument type="service" id="event_dispatcher" on-invalid="null" />
             </call>
         </service>
 
@@ -49,15 +49,9 @@
         </service>
 
         <!-- form -->
-
         <service id="form.type.mongator_document" class="%form.type.mongator_document.class%">
             <tag name="form.type" alias="mongator_document" />
             <argument type="service" id="mongator" />
-        </service>
-
-        <service id="form.type_guesser.mongator" class="%form.type_guesser.mongator.class%">
-            <tag name="form.type_guesser" />
-            <argument type="service" id="mongator.metadata_factory" />
         </service>
 
         <!-- validator -->
@@ -65,5 +59,14 @@
             <tag name="validator.constraint_validator" alias="mongator.validator.unique_document" />
             <argument type="service" id="mongator" />
         </service>
+
+        <!-- helper -->
+        <service id="mongator.helper.datecreated" class="Mongator\MongatorBundle\Helper\DateCreatedHelper" />
+
+        <service id="mongator.twigextension.datecreated" class="Mongator\MongatorBundle\Twig\DateCreatedExtension">
+            <argument type="service" id="mongator.helper.datecreated" />
+            <tag name="twig.extension" />
+        </service>
+
     </services>
 </container>

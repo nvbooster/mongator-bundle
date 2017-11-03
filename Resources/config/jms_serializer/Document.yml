@@ -1,0 +1,10 @@
+Mongator\Document\Document:
+    exclusion_policy: ALL
+    accessor_order: custom
+    custom_accessor_order: [id, sended]
+    properties:
+        id:
+            type: string
+    virtual_properties:
+        created:
+            exp: service('mongator.helper.datecreated').getDateCreated(object.getId())

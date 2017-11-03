@@ -1,0 +1,2 @@
+Mongator\Document\AbstractDocument:
+    exclusion_policy: ALL
