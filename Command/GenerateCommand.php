@@ -121,6 +121,11 @@ class GenerateCommand extends ContainerAwareCommand
          */
         $configManager = $this->getContainer()->get('mongator.generator.configmanager');
         foreach ($configManager->getConfiguration() as $class => $configClass) {
+            $configClass['output'] = $outputDir;
+            if (!key_exists('bundle_models', $configClass)) {
+                $configClass['bundle_models'] = $intermediate;
+            }
+
             if (empty($configClasses[$class])) {
                 $configClasses[$class] = $configClass;
             } else {
