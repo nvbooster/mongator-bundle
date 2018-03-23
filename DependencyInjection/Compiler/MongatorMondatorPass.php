@@ -81,5 +81,14 @@ class MongatorMondatorPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds('mongator.mondator.extension') as $id => $attributes) {
             $mondatorDefinition->addMethodCall('addExtension', array(new Reference($id)));
         }
+
+        // configuration providers
+        $configurationManagerDefinition = $container->getDefinition('mongator.generator.configmanager');
+        foreach ($container->findTaggedServiceIds('mongator.mondator.configprovider') as $id => $tagAttributes) {
+            foreach ($tagAttributes as $attributes) {
+                $configurationManagerDefinition
+                    ->addMethodCall('addProvider', [$container->getDefinition($id), empty($attributes['priority']) ? 10 : $attributes['priority']]);
+            }
+        }
     }
 }

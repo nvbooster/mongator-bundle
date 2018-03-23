@@ -58,7 +58,7 @@ class Configuration implements ConfigurationInterface
                 })
             ->end()
             ->children()
-                ->scalarNode('default_connection')->end()
+                ->scalarNode('default_connection')->cannotBeEmpty()->end()
             ->end()
             ->fixXmlConfig('connection')
             ->append($this->getConnectionsNode())

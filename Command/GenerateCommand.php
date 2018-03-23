@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Input\InputOption;
+use Mongator\MongatorBundle\ConfigurationManager;
 
 /**
  * GenerateCommand.
@@ -112,6 +113,18 @@ class GenerateCommand extends ContainerAwareCommand
                         }
                     }
                 }
+            }
+        }
+
+        /**
+         * @var ConfigurationManager $configManager
+         */
+        $configManager = $this->getContainer()->get('mongator.generator.configmanager');
+        foreach ($configManager->getConfiguration() as $class => $configClass) {
+            if (empty($configClasses[$class])) {
+                $configClasses[$class] = $configClass;
+            } else {
+                $configClasses[$class] = Util::arrayDeepMerge($configClasses[$class], $configClass);
             }
         }
 

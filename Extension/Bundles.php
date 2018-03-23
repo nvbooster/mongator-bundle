@@ -18,7 +18,7 @@ class Bundles extends Extension
     protected function doClassProcess()
     {
         foreach (['bundle_name', 'bundle_namespace', 'bundle_output'] as $parameter) {
-            if (!isset($this->configClass[$parameter]) || !$this->configClass[$parameter]) {
+            if (empty($this->configClass[$parameter])) {
                 return;
             }
         }
