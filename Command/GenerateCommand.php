@@ -12,28 +12,75 @@
 namespace Mongator\MongatorBundle\Command;
 
 use Mongator\MongatorBundle\Util;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Input\InputOption;
 use Mongator\MongatorBundle\ConfigurationManager;
+use Mandango\Mondator\Mondator;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * GenerateCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class GenerateCommand extends ContainerAwareCommand
+class GenerateCommand extends Command
 {
+    protected static $defaultName = 'mongator:generate';
+
+    /**
+     * @var string
+     */
+    private $modelDir;
+
+    /**
+     * @var array
+     */
+    private $extraDirs;
+
+    /**
+     * @var ConfigurationManager
+     */
+    private $configManager;
+
+    /**
+     * @var Mondator
+     */
+    private $mondator;
+
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
+     * @param Mondator             $mondator
+     * @param ConfigurationManager $configManager
+     * @param string               $modelDir
+     * @param KernelInterface      $kernel
+     * @param array                $extraDirs
+     * @param string               $name
+     */
+    public function __construct(Mondator $mondator, ConfigurationManager $configManager, $modelDir, KernelInterface $kernel, $extraDirs = [], $name = null)
+    {
+        $this->mondator = $mondator;
+        $this->configManager = $configManager;
+        $this->modelDir = $modelDir;
+        $this->kernel = $kernel;
+        $this->extraDirs = $extraDirs;
+
+        parent::__construct($name ?: self::$defaultName);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('mongator:generate')
             ->setDescription('Generate classes from config classes')
             ->addOption('bundle-models', 'b', InputOption::VALUE_NONE, 'Generate intermediate models inside bundles')
         ;
@@ -48,15 +95,10 @@ class GenerateCommand extends ContainerAwareCommand
 
         $intermediate = $input->getOption('bundle-models');
 
-        $container = $this->getContainer();
-        $outputDir = $container->getParameter('mongator.model_dir');
+        $outputDir = $this->modelDir;
 
         $configClasses = array();
-        // application + extra
-        foreach (array_merge(
-            array($container->getParameter('kernel.root_dir').'/config/mongator'),
-            $container->getParameter('mongator.extra_config_classes_dirs')
-        ) as $dir) {
+        foreach ($this->extraDirs as $dir) {
             if (is_dir($dir)) {
                 $finder = new Finder();
                 foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
@@ -80,7 +122,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         // bundles
         $configClassesPending = array();
-        foreach ($container->get('kernel')->getBundles() as $bundle) {
+        foreach ($this->kernel->getBundles() as $bundle) {
             $bundleModelNamespace = 'Model\\'.$bundle->getName();
 
             if (is_dir($dir = $bundle->getPath().'/Resources/config/mongator')) {
@@ -116,10 +158,7 @@ class GenerateCommand extends ContainerAwareCommand
             }
         }
 
-        /**
-         * @var ConfigurationManager $configManager
-         */
-        $configManager = $this->getContainer()->get('mongator.generator.configmanager');
+        $configManager = $this->configManager;
         foreach ($configManager->getConfiguration() as $class => $configClass) {
             $configClass['output'] = $outputDir;
             if (!key_exists('bundle_models', $configClass)) {
@@ -144,7 +183,7 @@ class GenerateCommand extends ContainerAwareCommand
 
         $output->writeln('generating classes');
 
-        $mondator = $container->get('mongator.mondator');
+        $mondator = $this->mondator;
         $mondator->setConfigClasses($configClasses);
         $mondator->process();
     }

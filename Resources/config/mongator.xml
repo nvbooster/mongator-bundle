@@ -9,9 +9,6 @@
       <parameter key="mongator.class">Mongator\Mongator</parameter>
       <parameter key="mongator.metadata_factory.class">Model\Mapping\MetadataFactory</parameter>
 
-      <parameter key="mongator.model_dir">%kernel.root_dir%/../src</parameter>
-      <parameter key="mongator.metadata_factory.output">%mongator.model_dir%</parameter>
-
       <!-- cache -->
       <parameter key="mongator.cache.filesystem_cache.class">Mongator\Cache\FilesystemCache</parameter>
       <parameter key="mongator.cache.filesystem_cache.dir">%kernel.cache_dir%/mongator/cache</parameter>

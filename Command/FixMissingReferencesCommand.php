@@ -11,24 +11,41 @@
 
 namespace Mongator\MongatorBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Mongator\Mongator;
 
 /**
  * FixMissingReferencesCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class FixMissingReferencesCommand extends ContainerAwareCommand
+class FixMissingReferencesCommand extends Command
 {
+    protected static $defaultName = 'mongator:fix-missing-references';
+
+    /**
+     * @var Mongator
+     */
+    private $mongator;
+
+    /**
+     * @param Mongator $mongator
+     * @param string   $name
+     */
+    public function __construct(Mongator $mongator, $name = null)
+    {
+        $this->mongator = $mongator;
+        parent::__construct($name ?: self::$defaultName);
+    }
+
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('mongator:fix-missing-references')
             ->setDescription('Fix missing references.')
         ;
     }
@@ -38,8 +55,8 @@ class FixMissingReferencesCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('fixing missing references');
+        $output->writeln('Fixing missing references');
 
-        $this->getContainer()->get('mongator')->fixAllMissingReferences();
+        $this->mongator->fixAllMissingReferences();
     }
 }

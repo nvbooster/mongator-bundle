@@ -13,27 +13,51 @@ namespace Mongator\MongatorBundle\Command;
 
 use Mongator\DataLoader;
 use Mongator\MongatorBundle\Util;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
+use Mongator\Mongator;
 
 /**
  * LoadFixturesCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
  */
-class LoadFixturesCommand extends ContainerAwareCommand
+class LoadFixturesCommand extends Command
 {
+    protected static $defaultName = 'mongator:load-fixtures';
+
+    /**
+     * @var Mongator
+     */
+    private $mongator;
+
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
+     * @param Mongator        $mongator
+     * @param KernelInterface $kernel
+     * @param string          $name
+     */
+    public function __construct(Mongator $mongator, KernelInterface $kernel, $name = null)
+    {
+        $this->mongator = $mongator;
+        $this->kernel = $kernel;
+        parent::__construct($name ?: self::$defaultName);
+    }
     /**
      * {@inheritdoc}
      */
     protected function configure()
     {
         $this
-            ->setName('mongator:load-fixtures')
             ->setDescription('Load fixtures.')
             ->addOption('fixtures', null, InputOption::VALUE_OPTIONAL, 'The directory or file to load data fixtures from')
             ->addOption('append', null, InputOption::VALUE_NONE, 'Whether or not to append the data fixtures')
@@ -53,11 +77,11 @@ class LoadFixturesCommand extends ContainerAwareCommand
         } else {
             $dirOrFile = array();
             // application
-            if (is_dir($dir = $this->getContainer()->getParameter('kernel.root_dir').'/DataFixtures/Mongator')) {
+            if (is_dir($dir = $this->kernel->getRootDir().'/DataFixtures/Mongator')) {
                 $dirOrFile[] = $dir;
             }
             // bundles
-            foreach ($this->getContainer()->get('kernel')->getBundles() as $bundle) {
+            foreach ($this->kernel->getBundles() as $bundle) {
                 if (is_dir($dir = $bundle->getPath().'/DataFixtures/Mongator')) {
                     $dirOrFile[] = $dir;
                 }
@@ -94,7 +118,7 @@ class LoadFixturesCommand extends ContainerAwareCommand
 
         $output->writeln('loading fixtures');
 
-        $dataLoader = new DataLoader($this->getContainer()->get('mongator'));
+        $dataLoader = new DataLoader($this->mongator);
         $dataLoader->load($data, !$input->getOption('append'));
     }
 }

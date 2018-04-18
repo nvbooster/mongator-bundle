@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Mongator\MongatorBundle\Command\GenerateCommand;
 
 /**
  * MongatorBundle.
@@ -38,16 +39,21 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+
+        $container->setParameter('mongator.metadata_factory.output', $config['model_dir']);
+
+        $loader->load('commands.xml');
+
+        //$generateCommandDefinition =
+        $container->getDefinition(GenerateCommand::class)
+            ->replaceArgument(2, $config['model_dir'])
+            ->replaceArgument(4, array_merge(
+                [$container->getParameter('kernel.root_dir').'/config/mongator'],
+                $config['extra_config_classes_dirs']
+            ));
+
         $loader->load('mongator.xml');
-
         $mongatorDefiniton = $container->getDefinition('mongator');
-
-        // model_dir
-        $container->setParameter('mongator.model_dir', $config['model_dir']);
-        // extra config classes dirs
-        $container->setParameter('mongator.extra_config_classes_dirs', $config['extra_config_classes_dirs']);
-
-
         // default_connection
         $mongatorDefiniton->addMethodCall('setDefaultConnectionName', array($config['default_connection']));
 
