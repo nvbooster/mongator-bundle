@@ -23,7 +23,7 @@ class Bundles extends Extension
             }
         }
 
-        $generateIntermediate = empty($this->configClass['bundle_models']);
+        $generateIntermediate = !empty($this->configClass['bundle_models']);
 
         if (!isset($this->configClass['model_namespace'])) {
             $this->configClass['model_namespace'] = 'Model';
