@@ -21,7 +21,7 @@ class BundlesTest extends \PHPUnit_Framework_TestCase
         $class = 'Model\Article';
         $configClasses = new \ArrayObject(
             array(
-                $class => array()
+                $class => []
             )
         );
         $container = new Container();

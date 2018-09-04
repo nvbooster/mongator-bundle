@@ -27,6 +27,7 @@ use Symfony\Component\Form\Guess\TypeGuess;
  * MongatorTypeGuesser
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorTypeGuesser implements FormTypeGuesserInterface
 {
@@ -62,37 +63,37 @@ class MongatorTypeGuesser implements FormTypeGuesserInterface
         if (isset($metadata['fields'][$property])) {
             switch ($metadata['fields'][$property]['type']) {
                 case 'bin_data':
-                    return new TypeGuess(FileType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(FileType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'boolean':
-                    return new TypeGuess(CheckboxType::class, array(), Guess::HIGH_CONFIDENCE);
+                    return new TypeGuess(CheckboxType::class, [], Guess::HIGH_CONFIDENCE);
                 case 'date':
-                    return new TypeGuess(DateType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(DateType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'float':
-                    return new TypeGuess(NumberType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(NumberType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'integer':
-                    return new TypeGuess(IntegerType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(IntegerType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'raw':
-                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'serialized':
-                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, [], Guess::MEDIUM_CONFIDENCE);
                 case 'string':
-                    return new TypeGuess(TextType::class, array(), Guess::MEDIUM_CONFIDENCE);
+                    return new TypeGuess(TextType::class, [], Guess::MEDIUM_CONFIDENCE);
             }
         }
 
         // referencesOne
         if (isset($metadata['referencesOne'][$property])) {
-            return new TypeGuess(MongatorDocumentType::class, array(
+            return new TypeGuess(MongatorDocumentType::class, [
                 'class' => $metadata['referencesOne'][$property]['class'],
-            ), Guess::HIGH_CONFIDENCE);
+            ], Guess::HIGH_CONFIDENCE);
         }
 
         // referencesMany
         if (isset($metadata['referencesMany'][$property])) {
-            return new TypeGuess(MongatorDocumentType::class, array(
+            return new TypeGuess(MongatorDocumentType::class, [
                 'class' => $metadata['referencesMany'][$property]['class'],
                 'multiple' => true,
-            ), Guess::HIGH_CONFIDENCE);
+            ], Guess::HIGH_CONFIDENCE);
         }
     }
 

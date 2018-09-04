@@ -7,4 +7,4 @@ Mongator\Document\Document:
             type: string
     virtual_properties:
         created:
-            exp: service('mongator.helper.datecreated').getDateCreated(object.getId())
+            exp: service('mongator.datehelper').getDateCreated(object.getId())

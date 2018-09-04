@@ -67,7 +67,7 @@ class UniqueDocumentValidatorTest extends TestCase
      */
     public function testIsValidAtLeastOneFieldEmpty()
     {
-        $this->validator->validate($this->createArticle(), $this->createConstraint(array()));
+        $this->validator->validate($this->createArticle(), $this->createConstraint([]));
     }
 
     public function testIsValidAtLeastOneFieldNotEmpty()

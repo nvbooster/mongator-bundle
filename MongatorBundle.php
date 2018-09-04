@@ -14,11 +14,14 @@ namespace Mongator\MongatorBundle;
 use Mongator\MongatorBundle\DependencyInjection\Compiler\MongatorMondatorPass;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
+use Mongator\MongatorBundle\DependencyInjection\Compiler\MongatorEventDispatcherPass;
+use Mandango\Mondator\Extension as MondatorExtension;
 
 /**
  * MongatorBundle.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorBundle extends Bundle
 {
@@ -30,5 +33,8 @@ class MongatorBundle extends Bundle
         parent::build($container);
 
         $container->addCompilerPass(new MongatorMondatorPass());
+        $container->addCompilerPass(new MongatorEventDispatcherPass());
+        $container->registerForAutoconfiguration(MondatorExtension::class)
+            ->addTag('mongator.mondator.extension');
     }
 }

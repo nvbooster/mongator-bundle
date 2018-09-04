@@ -22,6 +22,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
  * MongatorUserProvider.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorUserProvider implements UserLoaderInterface
 {
@@ -52,7 +53,7 @@ class MongatorUserProvider implements UserLoaderInterface
         $repository = $this->mongator->getRepository($class);
 
         if (null !== $this->property) {
-            $user = $repository->createQuery(array($this->property => $username))->one();
+            $user = $repository->createQuery([$this->property => $username])->one();
         } else {
             if (!$repository instanceof UserProviderInterface) {
                 throw new \InvalidArgumentException(sprintf('The Mongator repository "%s" must implement UserProviderInterface.', get_class($repository)));

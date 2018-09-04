@@ -11,21 +11,22 @@
 
 namespace Mongator\MongatorBundle\Command;
 
+use Mandango\Mondator\Mondator;
+use Mongator\MongatorBundle\ConfigurationManager;
 use Mongator\MongatorBundle\Util;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Yaml\Yaml;
-use Symfony\Component\Console\Input\InputOption;
-use Mongator\MongatorBundle\ConfigurationManager;
-use Mandango\Mondator\Mondator;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * GenerateCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class GenerateCommand extends Command
 {
@@ -34,27 +35,27 @@ class GenerateCommand extends Command
     /**
      * @var string
      */
-    private $modelDir;
+    protected $modelDir;
 
     /**
      * @var array
      */
-    private $extraDirs;
+    protected $extraDirs;
 
     /**
      * @var ConfigurationManager
      */
-    private $configManager;
+    protected $configManager;
 
     /**
      * @var Mondator
      */
-    private $mondator;
+    protected $mondator;
 
     /**
      * @var KernelInterface
      */
-    private $kernel;
+    protected $kernel;
 
     /**
      * @param Mondator             $mondator
@@ -64,15 +65,51 @@ class GenerateCommand extends Command
      * @param array                $extraDirs
      * @param string               $name
      */
-    public function __construct(Mondator $mondator, ConfigurationManager $configManager, $modelDir, KernelInterface $kernel, $extraDirs = [], $name = null)
+    public function __construct(Mondator $mondator, ConfigurationManager $configManager, KernelInterface $kernel, $name = null)
     {
         $this->mondator = $mondator;
         $this->configManager = $configManager;
-        $this->modelDir = $modelDir;
         $this->kernel = $kernel;
-        $this->extraDirs = $extraDirs;
+        $this->extraDirs = [];
 
-        parent::__construct($name ?: self::$defaultName);
+        parent::__construct($name);
+    }
+
+    /**
+     * @param string $modelDir
+     */
+    public function configureModelDir($modelDir)
+    {
+        $this->modelDir = $modelDir;
+    }
+
+    /**
+     * @param string|array $dirs
+     */
+    public function addExtraDirs($dirs)
+    {
+        if (!$dirs) {
+            return;
+        }
+        if (!is_array($dirs)) {
+            $dirs = [$dirs];
+        }
+
+        $this->extraDirs = array_merge($this->extraDirs, $dirs);
+    }
+
+    /**
+     * @param string|array $dirs
+     */
+    protected function setExtraDirs($dirs)
+    {
+        if (!$dirs) {
+            $dirs = [];
+        } elseif (!is_array($dirs)) {
+            $dirs = [$dirs];
+        }
+
+        $this->extraDirs = $dirs;
     }
 
     /**
@@ -91,17 +128,20 @@ class GenerateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (!$this->modelDir) {
+            throw new \RuntimeException('Model dir is not configured');
+        }
         $output->writeln('processing config classes');
 
         $intermediate = $input->getOption('bundle-models');
 
         $outputDir = $this->modelDir;
 
-        $configClasses = array();
+        $configClasses = [];
         foreach ($this->extraDirs as $dir) {
             if (is_dir($dir)) {
                 $finder = new Finder();
-                foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
+                foreach ($finder->files()->name('*.yaml')->name('*.yml')->followLinks()->in($dir) as $file) {
                     foreach ((array) Yaml::parse(file_get_contents($file)) as $class => $configClass) {
                         // class
                         if (0 !== strpos($class, 'Model\\')) {
@@ -121,13 +161,13 @@ class GenerateCommand extends Command
         }
 
         // bundles
-        $configClassesPending = array();
+        $configClassesPending = [];
         foreach ($this->kernel->getBundles() as $bundle) {
             $bundleModelNamespace = 'Model\\'.$bundle->getName();
 
             if (is_dir($dir = $bundle->getPath().'/Resources/config/mongator')) {
                 $finder = new Finder();
-                foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
+                foreach ($finder->files()->name('*.yaml')->name('*.yml')->followLinks()->in($dir) as $file) {
                     foreach ((array) Yaml::parse(file_get_contents($file)) as $class => $configClass) {
                         // class
                         if (0 !== strpos($class, 'Model\\')) {
@@ -135,7 +175,7 @@ class GenerateCommand extends Command
                         }
                         if (0 !== strpos($class, $bundleModelNamespace)) {
                             unset($configClass['output'], $configClass['bundle_name'], $configClass['bundle_output']);
-                            $configClassesPending[] = array('class' => $class, 'config_class' => $configClass);
+                            $configClassesPending[] = ['class' => $class, 'config_class' => $configClass];
                             continue;
                         }
 

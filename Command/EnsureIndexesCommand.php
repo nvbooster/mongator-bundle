@@ -11,15 +11,16 @@
 
 namespace Mongator\MongatorBundle\Command;
 
+use Mongator\Mongator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Mongator\Mongator;
 
 /**
  * EnsureIndexesCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class EnsureIndexesCommand extends Command
 {
@@ -28,7 +29,7 @@ class EnsureIndexesCommand extends Command
     /**
      * @var Mongator
      */
-    private $mongator;
+    protected $mongator;
 
     /**
      * @param Mongator $mongator
@@ -37,7 +38,7 @@ class EnsureIndexesCommand extends Command
     public function __construct(Mongator $mongator, $name = null)
     {
         $this->mongator = $mongator;
-        parent::__construct($name ?: self::$defaultName);
+        parent::__construct($name);
     }
 
     /**

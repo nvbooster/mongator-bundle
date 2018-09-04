@@ -11,19 +11,24 @@
 
 namespace Mongator\MongatorBundle\DependencyInjection;
 
+use Model\Mapping\MetadataFactory;
+use Mongator\Mongator;
+use Mongator\Extension\Core;
+use Mongator\MongatorBundle\Command\GenerateCommand;
+use Mongator\MongatorBundle\Extension\CustomType;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
-use Mongator\MongatorBundle\Command\GenerateCommand;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * MongatorBundle.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorExtension extends Extension implements PrependExtensionInterface
 {
@@ -38,53 +43,53 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
 
-        $container->setParameter('mongator.metadata_factory.output', $config['model_dir']);
-
-        $loader->load('commands.xml');
-
-        //$generateCommandDefinition =
         $container->getDefinition(GenerateCommand::class)
-            ->replaceArgument(2, $config['model_dir'])
-            ->replaceArgument(4, array_merge(
-                [$container->getParameter('kernel.root_dir').'/config/mongator'],
-                $config['extra_config_classes_dirs']
-            ));
+            ->addMethodCall('configureModelDir', [$config['model_dir']])
+            ->addMethodCall('addExtraDirs', ['%kernel.root_dir%/Resources/config/mongator'])
+            ->addMethodCall('addExtraDirs', [$config['model_dir']])
+        ;
 
-        $loader->load('mongator.xml');
-        $mongatorDefiniton = $container->getDefinition('mongator');
+        $mongatorDefiniton = $container->getDefinition(Mongator::class);
         // default_connection
-        $mongatorDefiniton->addMethodCall('setDefaultConnectionName', array($config['default_connection']));
+        $mongatorDefiniton->addMethodCall('setDefaultConnectionName', [$config['default_connection']]);
 
         // connections
         foreach ($config['connections'] as $name => $connection) {
-            $definition = new Definition($connection['class'], array(
+            $definition = new Definition($connection['class'], [
                 $connection['server'],
                 $connection['database'],
                 $connection['options'],
-            ));
+            ]);
+            $definition->setPublic(false);
 
             $connectionDefinitionName = sprintf('mongator.%s_connection', $name);
             $container->setDefinition($connectionDefinitionName, $definition);
 
             // ->setConnection
-            $container->getDefinition('mongator')->addMethodCall('setConnection', array(
+            $mongatorDefiniton->addMethodCall('setConnection', [
                 $name,
                 new Reference($connectionDefinitionName),
-            ));
+            ]);
         }
 
-        $types = [];
+        $container
+            ->register(Core::class)
+            ->setPublic(false)
+            ->addArgument([
+                'metadata_factory_class'  => MetadataFactory::class,
+                'metadata_factory_output' => $config['model_dir'],
+            ])
+            ->addTag('mongator.mondator.extension', ['priority' => 255])
+        ;
+
+        $customTypeExtensionDefinition = $container->getDefinition(CustomType::class);
         foreach ($config['mapping'] as $key => $type) {
-            $definition = new Definition($type['class']);
-            $definition->setPublic(false);
-            $definition->addTag('mongator.type', ['alias' => $key]);
-
-            $types[] = $definition;
+            $customTypeExtensionDefinition
+                ->addMethodCall('addCustomType', [$key, $type['class']]);
         }
-
-        $container->addDefinitions($types);
     }
 
     /**
@@ -95,16 +100,16 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
         $bundles = $container->getParameter('kernel.bundles');
 
         if (isset($bundles['JMSSerializerBundle'])) {
-            $container->prependExtensionConfig('jms_serializer', array(
-                'metadata' => array(
-                    'directories' => array(
-                        'mongator' => array(
+            $container->prependExtensionConfig('jms_serializer', [
+                'metadata' => [
+                    'directories' => [
+                        'mongator' => [
                             'namespace_prefix' => 'Mongator\\Document',
                             'path' => '@MongatorBundle/Resources/config/jms_serializer',
-                        )
-                    )
-                )
-            ));
+                        ],
+                    ],
+                ],
+            ]);
         }
     }
 }

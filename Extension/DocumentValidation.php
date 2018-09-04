@@ -11,14 +11,15 @@
 
 namespace Mongator\MongatorBundle\Extension;
 
-use Mandango\Mondator\Definition\Method;
 use Mandango\Mondator\Dumper;
 use Mandango\Mondator\Extension;
+use Mandango\Mondator\Definition\Method;
 
 /**
  * DocumentValidation extension.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class DocumentValidation extends Extension
 {
@@ -27,10 +28,10 @@ class DocumentValidation extends Extension
      */
     protected function doClassProcess()
     {
-        $validation = array(
-            'constraints' => array(),
-            'getters'     => array(),
-        );
+        $validation = [
+            'constraints' => [],
+            'getters'     => [],
+        ];
 
         // constraints
         if (isset($this->configClass['validation'])) {
@@ -111,7 +112,7 @@ EOF
      */
     public static function parseNodes(array $nodes)
     {
-        $values = array();
+        $values = [];
 
         foreach ($nodes as $name => $childNodes) {
             if (is_numeric($name) && is_array($childNodes) && count($childNodes) == 1) {

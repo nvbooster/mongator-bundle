@@ -42,7 +42,7 @@ class MongatorDocumentToIdTransformerTest extends \PHPUnit_Framework_TestCase
     {
         $this->choiceList
             ->shouldReceive('getDocuments')
-            ->andReturn(array());
+            ->andReturn([]);
 
         $this->assertNull($this->transformer->reverseTransform('001'));
     }

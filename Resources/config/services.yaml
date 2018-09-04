@@ -1,0 +1,25 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Mongator\MongatorBundle\:
+        resource: '../../*'
+        exclude: '../../{DependencyInjection,Tests}'
+
+    Mandango\Mondator\Mondator: ~
+    Mongator\Mongator: ~
+    Mongator\MetadataFactory:
+        factory: 'Mongator\MongatorBundle\MetadataFactoryFactory:getMetadataFactory'
+    Mongator\MongatorBundle\Extension\Bundles:  
+        tags:
+            - { name: 'mongator.mondator.extension', priority: 100 }
+
+    mongator:
+        alias: 'Mongator\Mongator'
+        public: true
+        
+    mongator.datehelper:
+        alias: 'Mongator\MongatorBundle\Helper\DateCreatedHelper'
+        public: true

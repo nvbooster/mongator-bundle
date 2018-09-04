@@ -17,9 +17,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 /**
  * MongatorExtension configuration structure.
  *
- * Based on the DoctrineMongoDBBundle's configuration.
- *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class Configuration implements ConfigurationInterface
 {
@@ -42,8 +41,8 @@ class Configuration implements ConfigurationInterface
                 })
                 ->then(function ($v) {
                     // Key that should not be rewritten to the connection config
-                    $excludedKeys = array('default_connection', 'extra_config_classes_dirs', 'mapping');
-                    $connection = array();
+                    $excludedKeys = ['default_connection', 'extra_config_classes_dirs', 'mapping'];
+                    $connection = [];
                     foreach ($v as $key => $value) {
                         if (in_array($key, $excludedKeys)) {
                             continue;
@@ -52,7 +51,7 @@ class Configuration implements ConfigurationInterface
                         unset($v[$key]);
                     }
                     $v['default_connection'] = isset($v['default_connection']) ? (string) $v['default_connection'] : 'default';
-                    $v['connections'] = array($v['default_connection'] => $connection);
+                    $v['connections'] = [$v['default_connection'] => $connection];
 
                     return $v;
                 })
@@ -112,7 +111,7 @@ class Configuration implements ConfigurationInterface
             ->beforeNormalization()
                 ->ifString()
                 ->then(function ($v) {
-                    return array('class' => $v);
+                    return ['class' => $v];
                 })
             ->end()
             ->children()

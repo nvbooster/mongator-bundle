@@ -19,7 +19,7 @@ class MongatorDocumentsToArrayTransformerTest extends \PHPUnit_Framework_TestCas
 
     public function testTransformIfGroupNullReturnEmptyArray()
     {
-        $this->assertEquals(array(), $this->transformer->transform(null));
+        $this->assertEquals([], $this->transformer->transform(null));
     }
 
     public function testTransformShouldThrowExceptionIfNotReferenceGroup()
@@ -47,7 +47,7 @@ class MongatorDocumentsToArrayTransformerTest extends \PHPUnit_Framework_TestCas
     {
         $this->choiceList
             ->shouldReceive('getDocuments')
-            ->andReturn(array());
+            ->andReturn([]);
 
         $this->setExpectedException('Symfony\Component\Form\Exception\TransformationFailedException');
         $this->transformer->reverseTransform(array('001'));

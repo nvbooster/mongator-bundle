@@ -15,6 +15,7 @@ namespace Mongator\MongatorBundle;
  * Util.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class Util
 {
@@ -37,7 +38,7 @@ class Util
 
         if (2 == $numArgs) {
             $args = func_get_args();
-            $args[2] = array();
+            $args[2] = [];
             if (is_array($args[0]) && is_array($args[1])) {
                 foreach (array_unique(array_merge(array_keys($args[0]), array_keys($args[1]))) as $key) {
                     $isKey0 = array_key_exists($key, $args[0]);
@@ -72,6 +73,6 @@ class Util
         $args[1] = static::arrayDeepMerge($args[0], $args[1]);
         array_shift($args);
 
-        return call_user_func_array(array(get_called_class(), 'arrayDeepMerge'), $args);
+        return call_user_func_array([get_called_class(), 'arrayDeepMerge'], $args);
     }
 }

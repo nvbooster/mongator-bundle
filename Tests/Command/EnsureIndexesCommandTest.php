@@ -15,7 +15,7 @@ class EnsureIndexesCommandTest extends CommandTestCase
 
         $tester = $this->getCommandTester($command);
         $tester->execute(
-            array_merge(array('command' => $command->getName()), array())
+            array_merge(array('command' => $command->getName()), [])
         );
     }
 

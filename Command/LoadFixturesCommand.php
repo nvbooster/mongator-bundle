@@ -12,6 +12,7 @@
 namespace Mongator\MongatorBundle\Command;
 
 use Mongator\DataLoader;
+use Mongator\Mongator;
 use Mongator\MongatorBundle\Util;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,12 +21,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
-use Mongator\Mongator;
 
 /**
  * LoadFixturesCommand.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class LoadFixturesCommand extends Command
 {
@@ -34,12 +35,12 @@ class LoadFixturesCommand extends Command
     /**
      * @var Mongator
      */
-    private $mongator;
+    protected $mongator;
 
     /**
      * @var KernelInterface
      */
-    private $kernel;
+    protected $kernel;
 
     /**
      * @param Mongator        $mongator
@@ -50,7 +51,7 @@ class LoadFixturesCommand extends Command
     {
         $this->mongator = $mongator;
         $this->kernel = $kernel;
-        parent::__construct($name ?: self::$defaultName);
+        parent::__construct($name);
     }
     /**
      * {@inheritdoc}
@@ -73,9 +74,9 @@ class LoadFixturesCommand extends Command
 
         $dirOrFile = $input->getOption('fixtures');
         if ($dirOrFile) {
-            $dirOrFile = array($dirOrFile);
+            $dirOrFile = [$dirOrFile];
         } else {
-            $dirOrFile = array();
+            $dirOrFile = [];
             // application
             if (is_dir($dir = $this->kernel->getRootDir().'/DataFixtures/Mongator')) {
                 $dirOrFile[] = $dir;
@@ -88,7 +89,7 @@ class LoadFixturesCommand extends Command
             }
         }
 
-        $files = array();
+        $files = [];
         foreach ($dirOrFile as $dir) {
             if (is_file($dir)) {
                 $files[] = $dir;
@@ -96,7 +97,7 @@ class LoadFixturesCommand extends Command
             }
             if (is_dir($dir)) {
                 $finder = new Finder();
-                foreach ($finder->files()->name('*.yml')->followLinks()->in($dir) as $file) {
+                foreach ($finder->files()->name('*.yaml')->name('*.yml')->followLinks()->in($dir) as $file) {
                     $files[] = $file;
                 }
                 continue;
@@ -105,7 +106,7 @@ class LoadFixturesCommand extends Command
             throw new \InvalidArgumentException(sprintf('"%s" is not a dir or file.', $dir));
         }
 
-        $data = array();
+        $data = [];
         foreach ($files as $file) {
             $data = Util::arrayDeepMerge($data, (array) Yaml::parse(file_get_contents($file)));
         }

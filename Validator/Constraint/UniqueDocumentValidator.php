@@ -14,10 +14,15 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  * UniqueConstraint.
  *
  * fixes compatibility errors
+ *
+ * @author nvb <nvb@aproxima.ru>
  */
 class UniqueDocumentValidator extends ConstraintValidator
 {
-    private $mongator;
+    /**
+     * @var Mongator
+     */
+    protected $mongator;
 
     /**
      * @param Mongator $mongator A mongator.
@@ -76,7 +81,7 @@ class UniqueDocumentValidator extends ConstraintValidator
     private function parseFields($fields)
     {
         if (is_string($fields)) {
-            $fields = array($fields);
+            $fields = [$fields];
         } elseif (is_array($fields)) {
             if (0 === count($fields)) {
                 throw new ConstraintDefinitionException('At least one field has to be specified.');
@@ -107,7 +112,7 @@ class UniqueDocumentValidator extends ConstraintValidator
 
     private function createCriteria(Document $document, array $fields, array $caseInsensitive)
     {
-        $criteria = array();
+        $criteria = [];
         foreach ($fields as $field) {
             $value = $document->get($field);
             if (in_array($field, $caseInsensitive)) {

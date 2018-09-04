@@ -8,6 +8,7 @@ use Mongator\Type\Container;
 /**
  * CustomType
  *
+ * @author nvb <nvb@aproxima.ru>
  */
 class CustomType extends Extension
 {

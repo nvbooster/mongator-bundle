@@ -25,7 +25,7 @@ class ShowTypesCommand extends Command
      */
     public function __construct(Mondator $mondator, $name = null)
     {
-        parent::__construct($name ?: self::$defaultName);
+        parent::__construct($name);
     }
 
     /**

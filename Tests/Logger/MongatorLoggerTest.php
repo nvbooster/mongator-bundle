@@ -29,7 +29,7 @@ class MongatorLoggerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetQueries()
     {
-        $this->assertSame(array(), $this->logger->getQueries());
+        $this->assertSame([], $this->logger->getQueries());
         $this->logger->logQuery($query1 = array('foo' => 'bar'));
         $this->logger->logQuery($query2 = array('ups' => 'foo'));
         $this->assertSame(array($query1, $query2), $this->logger->getQueries());
@@ -38,9 +38,9 @@ class MongatorLoggerTest extends \PHPUnit_Framework_TestCase
     public function testCountQueries()
     {
         $this->assertSame(0, $this->logger->getNbQueries());
-        $this->logger->logQuery(array());
+        $this->logger->logQuery([]);
         $this->assertSame(1, $this->logger->getNbQueries());
-        $this->logger->logQuery(array());
+        $this->logger->logQuery([]);
         $this->assertSame(2, $this->logger->getNbQueries());
     }
 }

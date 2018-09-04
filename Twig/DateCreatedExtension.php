@@ -1,4 +1,5 @@
 <?php
+
 namespace Mongator\MongatorBundle\Twig;
 
 use Mongator\MongatorBundle\Helper\DateCreatedHelper;
@@ -29,9 +30,9 @@ class DateCreatedExtension extends \Twig_Extension
      */
     public function getFilters()
     {
-        return array(
-            new \Twig_SimpleFilter('mongodb_created', array($this, 'getDateCreated'))
-        );
+        return [
+            new \Twig_SimpleFilter('mongodb_created', [$this, 'getDateCreated'])
+        ];
     }
 
     /**

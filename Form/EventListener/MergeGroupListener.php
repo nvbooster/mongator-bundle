@@ -19,6 +19,7 @@ use Symfony\Component\Form\FormEvents;
  * MergeGroupListener.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MergeGroupListener implements EventSubscriberInterface
 {
@@ -27,7 +28,7 @@ class MergeGroupListener implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(FormEvents::SUBMIT => array('onBind', 10));
+        return [FormEvents::SUBMIT => ['onBind', 10]];
     }
 
     /**

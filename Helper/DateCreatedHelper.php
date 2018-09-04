@@ -1,7 +1,8 @@
 <?php
+
 namespace Mongator\MongatorBundle\Helper;
 
-use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\ObjectID;
 use MongoDB\Driver\Exception\InvalidArgumentException as MongoDBInvalidArgumentException;
 
 /**

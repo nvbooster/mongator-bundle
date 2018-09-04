@@ -25,6 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * MongatorDocumentType.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorDocumentType extends AbstractType
 {
@@ -73,7 +74,7 @@ class MongatorDocumentType extends AbstractType
                 $this->mongator->getRepository($options['class'])->createQuery()->all()
             ;
 
-            $choices = array();
+            $choices = [];
             foreach ($collection as $document) {
                 $choices[(string) $document->getId()] = $document;
             }
@@ -81,11 +82,11 @@ class MongatorDocumentType extends AbstractType
             return $choices;
         };
 
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'choice_label' => function($choice) { return (string) $choice; },
-            'criteria' => array(),
+            'criteria' => [],
             'choices' => $choices,
-        ));
+        ]);
 
         $resolver->setRequired('class');
         $resolver->addAllowedTypes('class', 'string');

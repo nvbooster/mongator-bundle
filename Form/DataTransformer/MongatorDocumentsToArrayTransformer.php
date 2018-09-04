@@ -19,6 +19,7 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
  * MongatorDocumentToArrayTransformer.
  *
  * @author Pablo Díez <pablodip@gmail.com>
+ * @author nvb <nvb@aproxima.ru>
  */
 class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
 {
@@ -33,7 +34,7 @@ class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
     public function transform($group)
     {
         if (null === $group) {
-            return array();
+            return [];
         }
 
         if (!$group instanceof ReferenceGroup) {
@@ -45,8 +46,6 @@ class MongatorDocumentsToArrayTransformer implements DataTransformerInterface
 
     /**
      * @param array $array
-     *
-     * @throws TransformationFailedException
      *
      * @return array
      */
