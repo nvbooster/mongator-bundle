@@ -23,6 +23,11 @@ use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Alias;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Mongator\Cache\ArrayCache;
+use Mongator\Cache\APCCache;
+use Mongator\Cache\FilesystemCache;
 
 /**
  * MongatorBundle.
@@ -90,6 +95,15 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
             $customTypeExtensionDefinition
                 ->addMethodCall('addCustomType', [$key, $type['class']]);
         }
+
+        if (! empty($config['fields_cache_driver'])) {
+            $cacheService = $this->getCacheService($container, $config['fields_cache_driver']);
+            $mongatorDefiniton->addMethodCall('setFieldsCache', [new Reference($cacheService)]);
+        }
+        if (! empty($config['data_cache_driver'])) {
+            $cacheService = $this->getCacheService($container, $config['data_cache_driver']);
+            $mongatorDefiniton->addMethodCall('setDataCache', [new Reference($cacheService)]);
+        }
     }
 
     /**
@@ -111,5 +125,99 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
                 ],
             ]);
         }
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param array            $cacheConfig
+     *
+     * @return string
+     */
+    private function getCacheService(ContainerBuilder $container, $cacheConfig)
+    {
+        $serviceId = sprintf('mongator.cache.%s', substr(md5(time().mt_rand()), 24));
+
+        switch ($cacheConfig['type']) {
+            case 'service':
+                if (empty($cacheConfig['id'])) {
+                    throw new InvalidConfigurationException('Service id must be defined');
+                }
+                $container->setAlias($serviceId, new Alias($cacheConfig['id'], false));
+
+                break;
+            case 'class':
+                if (empty($cacheConfig['class'])) {
+                    throw new InvalidConfigurationException('Class name must be defined');
+                }
+                $container->setDefinition($serviceId, $this->getCacheServiceDefinition($cacheConfig['class']));
+
+                break;
+            case 'array':
+                $container->setDefinition($serviceId, $this->getCacheServiceDefinition(ArrayCache::class));
+
+                break;
+            case 'apc':
+                $container->setDefinition($serviceId, $this->getCacheServiceDefinition(APCCache::class));
+
+                break;
+            case 'filesystem':
+                $container->setDefinition($serviceId, $definition = $this->getCacheServiceDefinition(FilesystemCache::class));
+                $definition->addArgument('%kernel.cache_dir%/mongator/cache');
+
+                break;
+            case 'memcached':
+                $container->setDefinition($serviceId, $definition = $this->getCacheServiceDefinition(FilesystemCache::class));
+
+                $memcached = new Definition(\Memcached::class);
+                $memcached->setPublic(false);
+                $memcached->addMethodCall('addServer', [
+                    (! empty($cacheConfig['host'])) ? $cacheConfig['host'] : 'localhost',
+                    (! empty($cacheConfig['port'])) ? $cacheConfig['host'] : 11211,
+                ]);
+
+                $container->setDefinition($memcachedServiceId = $serviceId.'.provider', $memcached);
+
+                $definition->addArgument(new Reference($memcachedServiceId));
+
+                break;
+            case 'redis':
+                $container->setDefinition($serviceId, $definition = $this->getCacheServiceDefinition(FilesystemCache::class));
+
+                $memcached = new Definition(\Redis::class);
+                $memcached->setPublic(false);
+                $memcached->addMethodCall('connect', [
+                    (! empty($cacheConfig['host'])) ? $cacheConfig['host'] : 'localhost',
+                    (! empty($cacheConfig['port'])) ? $cacheConfig['host'] : 6379,
+                ]);
+                if (! empty($cacheConfig['database'])) {
+                    $memcached->addMethodCall('select', $cacheConfig['database']);
+                }
+                if (! empty($cacheConfig['password'])) {
+                    $memcached->addMethodCall('auth', $cacheConfig['password']);
+                }
+
+                $container->setDefinition($memcachedServiceId = $serviceId.'.provider', $memcached);
+
+                $definition->addArgument(new Reference($memcachedServiceId));
+
+                break;
+        }
+
+        return $serviceId;
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return \Symfony\Component\DependencyInjection\Definition
+     */
+    private function getCacheServiceDefinition($class)
+    {
+        $definition = new Definition($class);
+        $definition->setPublic(false);
+        $definition->setAutowired(true);
+        $definition->setAutoconfigured(true);
+
+        return $definition;
     }
 }

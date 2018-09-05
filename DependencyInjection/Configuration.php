@@ -32,6 +32,8 @@ class Configuration implements ConfigurationInterface
         $rootNode = $treeBuilder->root('mongator', 'array');
 
         $rootNode
+            ->append($this->getCacheDriverNode('fields_cache_driver'))
+            ->append($this->getCacheDriverNode('data_cache_driver'))
             ->children()
                 ->scalarNode('model_dir')->defaultValue('%kernel.root_dir%/../src')->cannotBeEmpty()->end()
             ->end()
@@ -144,6 +146,42 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('password')->end()
             ->end()
         ->end();
+
+        return $node;
+    }
+
+    /**
+     * Return cache driver node for an given entity manager
+     *
+     * @param string $name
+     *
+     * @return \Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition
+     */
+    private function getCacheDriverNode($name)
+    {
+        $treeBuilder = new TreeBuilder();
+        $node = $treeBuilder->root($name);
+
+        $node
+            ->beforeNormalization()
+                ->ifString()
+                ->then(function ($v) {
+                    return ['type' => $v];
+                })
+            ->end()
+            ->children()
+                ->enumNode('type')
+                    ->values(['array', 'apc', 'filesystem', 'memcached', 'redis', 'service', 'class'])
+                    ->defaultValue('array')
+                ->end()
+                ->scalarNode('host')->end()
+                ->scalarNode('port')->end()
+                ->scalarNode('password')->end()
+                ->scalarNode('database')->end()
+                ->scalarNode('class')->end()
+                ->scalarNode('id')->end()
+            ->end()
+        ;
 
         return $node;
     }
