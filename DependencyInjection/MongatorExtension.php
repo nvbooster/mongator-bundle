@@ -13,21 +13,22 @@ namespace Mongator\MongatorBundle\DependencyInjection;
 
 use Model\Mapping\MetadataFactory;
 use Mongator\Mongator;
+use Mongator\Cache\APCCache;
+use Mongator\Cache\ArrayCache;
+use Mongator\Cache\FilesystemCache;
 use Mongator\Extension\Core;
 use Mongator\MongatorBundle\Command\GenerateCommand;
 use Mongator\MongatorBundle\Extension\CustomType;
 use Symfony\Component\Config\FileLocator;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\DependencyInjection\Alias;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
-use Symfony\Component\DependencyInjection\Alias;
-use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
-use Mongator\Cache\ArrayCache;
-use Mongator\Cache\APCCache;
-use Mongator\Cache\FilesystemCache;
 
 /**
  * MongatorBundle.
@@ -103,6 +104,18 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
         if (! empty($config['data_cache_driver'])) {
             $cacheService = $this->getCacheService($container, $config['data_cache_driver']);
             $mongatorDefiniton->addMethodCall('setDataCache', [new Reference($cacheService)]);
+        }
+
+        if (class_exists(Form::class)) {
+            $defaultDefinition = new Definition();
+
+            $defaultDefinition
+                ->setAutowired(true)
+                ->setAutoconfigured(true)
+                ->setPublic(false)
+            ;
+
+            $loader->registerClasses($definition, 'Mongator\\MongatorBundle\\Form\\', '../../Form/*');
         }
     }
 

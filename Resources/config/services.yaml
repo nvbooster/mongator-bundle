@@ -6,7 +6,7 @@ services:
 
     Mongator\MongatorBundle\:
         resource: '../../*'
-        exclude: '../../{DependencyInjection,Tests}'
+        exclude: '../../{DependencyInjection,Form,Tests}'
 
     Mandango\Mondator\Mondator: ~
     Mongator\Mongator: ~
