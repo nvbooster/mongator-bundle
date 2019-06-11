@@ -11,6 +11,7 @@
 
 namespace Mongator\MongatorBundle\DependencyInjection;
 
+use Mongator\Connection;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 
@@ -88,7 +89,7 @@ class Configuration implements ConfigurationInterface
 
         $connectionNode
             ->children()
-                ->scalarNode('class')->defaultValue('Mongator\Connection')->cannotBeEmpty()->end()
+                ->scalarNode('class')->defaultValue(Connection::class)->cannotBeEmpty()->end()
                 ->scalarNode('server')->isRequired()->cannotBeEmpty()->end()
                 ->scalarNode('database')->isRequired()->cannotBeEmpty()->end()
             ->end()
