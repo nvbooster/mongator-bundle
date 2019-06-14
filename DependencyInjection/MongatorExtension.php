@@ -54,8 +54,8 @@ class MongatorExtension extends Extension implements PrependExtensionInterface
 
         $container->getDefinition(GenerateCommand::class)
             ->addMethodCall('configureModelDir', [$config['model_dir']])
-            ->addMethodCall('addExtraDirs', ['%kernel.root_dir%/Resources/config/mongator'])
-            ->addMethodCall('addExtraDirs', [$config['model_dir']])
+            ->addMethodCall('addExtraDirs', ['%kernel.root_dir%/../config/mongator'])
+            ->addMethodCall('addExtraDirs', [$config['extra_config_classes_dirs']])
         ;
 
         $mongatorDefiniton = $container->getDefinition(Mongator::class);
